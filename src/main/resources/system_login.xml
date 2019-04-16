@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<page
+      title="دفتر تلفن" attA="000000" attB="ccac5b" attC="a.png">
+    <section title="دفتر تلفن">
+        <input label="نام کاربری" type="text" value="obj.user"/>
+        <input label="کلمه عبور" type="password" value="obj.pass"/>
+        <button label="ورود">
+            <action type="call" attA="login" attB="obj"/>
+        </button>
+    </section>
+</page>

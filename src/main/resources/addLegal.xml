@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<page title=" ثبت مشتری حقوقی">
+    <section title="مشخصات مشتری">
+        <input label="نام :" type="text" value="obj.name"/>
+        <input label="تاریخ ثبت شرکت :" type="date" value="obj.openingDate"/>
+        <input label="کد ثبت :" type="text" value="obj.registrationCode"/>
+        <input label="ایمیل :" type="text" value="obj.eMailAddress"/>
+        <input label="آدرس :" type="text" value="obj.address"/>
+        <table label="شماره تلفن" value="obj.numbers" type="editable">
+            <input label="تلفن :" type="text" value="number"/>
+            <comboBox label="نوع :" value="type">
+                <comboItem itemLabel="همراه" itemValue="MOBILE" />
+                <comboItem itemLabel="ثابت" itemValue="HOME" />
+                <comboItem itemLabel="فکس" itemValue="FAX" />
+                <comboItem itemLabel="سایر" itemValue="OTHER" />
+            </comboBox>
+        </table>
+        <table label="سپرده" value="obj.accountEntities" type="editable">
+            <input label="شماره حساب :" type="text" value="accountNumber"/>
+            <input label="موجودی اولیه :" type="text" value="accountAmount"/>
+        </table>
+        <actions>
+            <button label="ذخیره">
+                <webService address="ws/addLegalContact" clearPageOnSuccess="true" >
+                    <webServiceInputObject name="obj"/>
+                </webService>
+            </button>
+        </actions>
+    </section>
+</page>

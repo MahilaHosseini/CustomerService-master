@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<page title=" جستجو مشتری حقیقی">
+    <section title="جستجو">
+        <search label="کدملی:"
+                singleResultSearch="ws/uniqueRealSearch"
+                singleResultSearchInputkey="nationalCode"
+                multiResultSearchAddress="ws/realPersonSearch"
+                multiResultSearchInput="x"
+                selectedResultKey="nationalCode"
+                title="جستجوی پیشرفته"
+                value="obj">
+            <input label="نام" type="text" value="x.name"/>
+            <table label="نتایج جستجو">
+                <input label="نام" type="text" value="name"/>
+                <input label="کد ملی" type="text" value="nationalCode"/>
+            </table>
+        </search>
+    </section>
+    <section title="مشخصات مشتری" >
+        <input label="نام :" type="text" value="obj.name" />
+        <input label="نام خانوادگی :" type="text" value="obj.lastName"/>
+        <input label="کد ملی :" type="text" value="obj.nationalCode" disable="true"/>
+        <input label="ایمیل :" type="text" value="obj.eMailAddress"/>
+        <input label="آدرس :" type="text" value="obj.address"/>
+        <table label="شماره تلفن" value="obj.numbers" type="editable">
+            <input label="تلفن :" type="text" value="number"/>
+            <comboBox label="نوع :" value="type">
+                <comboItem itemLabel="همراه" itemValue="MOBILE" />
+                <comboItem itemLabel="ثابت" itemValue="HOME" />
+                <comboItem itemLabel="فکس" itemValue="FAX" />
+                <comboItem itemLabel="سایر" itemValue="OTHER" />
+            </comboBox>
+        </table>
+        <table label="سپرده" value="obj.accountEntities" type="editable">
+            <input label="شماره حساب :" type="text" value="accountNumber" />
+            <input label="موجودی :" type="text" value="accountAmount" />
+        </table>
+        <actions>
+            <button label="ذخیره">
+                <webService address="ws/saveRealPerson" clearPageOnSuccess="true">
+                    <webServiceInputObject name="obj"/>
+                </webService>
+            </button>
+        </actions>
+    </section>
+</page>

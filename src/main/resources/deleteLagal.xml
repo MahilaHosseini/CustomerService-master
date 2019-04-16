@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<page title="حذف مشتری حقوقی">
+    <section title="جستجو">
+        <search label="کد ثبت:"
+                singleResultSearch="ws/uniqueLegalSearch"
+                singleResultSearchInputkey="registrationCode"
+                multiResultSearchAddress="ws/legalPersonSearch"
+                multiResultSearchInput="x"
+                selectedResultKey="registrationCode"
+                title="جستجوی پیشرفته"
+                value="obj">
+            <input label="نام" type="text" value="x.name"/>
+            <table label="نتایج جستجو">
+                <input label="نام" type="text" value="name"/>
+                <input label="کد ثبت" type="text" value="registrationCode"/>
+            </table>
+        </search>
+    </section>
+    <section title="مشخصات مشتری" >
+        <input label="نام :" type="text" value="obj.name"  disable="true"/>
+        <input label="تاریخ ثبت شرکت :" type="date" value="obj.openingDate"  disable="true"/>
+        <input label="کد ثبت :" type="text" value="obj.registrationCode" disable="true"/>
+        <input label="ایمیل :" type="text" value="obj.eMailAddress"  disable="true"/>
+        <input label="آدرس :" type="text" value="obj.address"  disable="true"/>
+        <table label="شماره تلفن" value="obj.numbers" >
+            <input label="تلفن :" type="text" value="number" disable="true"/>
+            <comboBox label="نوع :" value="type"  disable="true">
+                <comboItem itemLabel="همراه" itemValue="MOBILE" />
+                <comboItem itemLabel="ثابت" itemValue="HOME" />
+                <comboItem itemLabel="فکس" itemValue="FAX" />
+                <comboItem itemLabel="سایر" itemValue="OTHER" />
+            </comboBox>
+        </table>
+        <table label="سپرده" value="obj.accountEntities" >
+            <table label="تراکنش" value="transactionEntities" >
+                <input label="نوع تراکنش :" type="text" value="transactionType" disable="true"/>
+                <input label="مبلغ :" type="text" value="amount" disable="true"/>
+                <input label="تاریخ انجام تراکنش :" type="date" value="transactionDate" disable="true"/>
+            </table>
+            <input label="شماره حساب :" type="text" value="accountNumber" disable="true"/>
+            <input label="موجودی :" type="text" value="accountAmount" disable="true"/>
+            <input label="تاریخ افتتاح حساب :" type="text" value="openingDate" disable="true"/>
+        </table>
+        <actions>
+            <button label="حذف">
+                <webService address="ws/deleteLegalPerson" clearPageOnSuccess="true">
+                    <webServiceInputObject name="obj"/>
+                </webService>
+            </button>
+        </actions>
+    </section>
+</page>

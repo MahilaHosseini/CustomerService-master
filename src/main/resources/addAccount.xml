@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page title="ثبت حساب">
+    <section title="مشخصات حساب">
+        <input label="کد ملی/ کد ثبت :" type="text" value="obj.code"/>
+        <input label="مبلغ :" type="text" value="obj.accountAmount"/>
+        <actions>
+            <button label="ذخیره">
+                <webService address="ws/addAccount" clearPageOnSuccess="true" >
+                    <webServiceInputObject name="obj"/>
+                </webService>
+            </button>
+        </actions>
+    </section>
+</page>
