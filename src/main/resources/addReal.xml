@@ -15,10 +15,6 @@
                 <comboItem itemLabel="سایر" itemValue="OTHER" />
             </comboBox>
         </table>
-        <table label="سپرده" value="obj.accountEntities" type="editable">
-            <input label="شماره حساب :" type="text" value="accountNumber"/>
-            <input label="موجودی اولیه :" type="text" value="accountAmount"/>
-        </table>
         <actions>
             <button label="ذخیره">
                 <webService address="ws/addRealContact" clearPageOnSuccess="true" >

@@ -2,10 +2,19 @@ package com.customerService.app.dto;
 
 import java.math.BigDecimal;
 
-public class BankFacilities {
+public class BankFacilitiesDto {
     private FacilityType facilityType;
     private BigDecimal amount;
     private String accountNumber;
+    private String taskId;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
     public FacilityType getFacilityType() {
         return facilityType;

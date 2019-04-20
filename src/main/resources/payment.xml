@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page title=" پرداخت تسهيلات">
+    <init>
+        <webService value="obj" address="ws/plan/getTaskByTaskId">
+            <webServiceInput ref="urlParams.taskId" name="taskId"/>
+        </webService>
+    </init>
+    <section title="مشخصات مشتری">
+        <input label="شماره حساب :" type="text" value="obj.accountNumber"/>
+        <input label="مقدار :" type="date" value="obj.amount"/>
+        <input label="شماره درخواست :" type="text" value="obj.taskId"/>
+        <input label="نوع تسهيلات :" type="text" value="obj.facilityType"/>
+        <actions>
+            <button label="پرداخت">
+                <webService address="ws/activiti/payment" clearPageOnSuccess="true">
+                    <webServiceInputObject name="obj"/>
+                </webService>
+            </button>
+        </actions>
+    </section>
+</page>

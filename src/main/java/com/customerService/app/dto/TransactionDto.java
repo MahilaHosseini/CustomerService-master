@@ -7,6 +7,15 @@ public class TransactionDto {
     private BigDecimal amount;
     private String destinationAccountNumber;
 
+    public TransactionDto(String accountNumber, BigDecimal amount) {
+        this.accountNumber = accountNumber;
+        this.amount = amount;
+    }
+
+    public TransactionDto() {
+
+    }
+
     public String getAccountNumber() {
         return accountNumber;
     }

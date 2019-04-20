@@ -20,19 +20,30 @@ public class AccountEntity {
     private Date openingDate = new Date();
     @OneToMany(cascade = CascadeType.ALL)
     private List<TransactionEntity> transactionEntities = new ArrayList<>();
-
-
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<FacilityEntity> facilityEntities = new ArrayList<>();
     private BigDecimal profit = new BigDecimal(0);
-    private BigDecimal minimumOfTheDay = new BigDecimal(1000000);
-
+    private BigDecimal minimumOfTheDay ;
+    private BigDecimal minimumOfMonth ;
 
     public AccountEntity(String accountNumber, BigDecimal accountAmount) {
         this.accountNumber = accountNumber;
         this.accountAmount = accountAmount;
+        minimumOfTheDay = accountAmount;
+        minimumOfMonth = accountAmount;
     }
+
 
     public AccountEntity() {
 
+    }
+
+    public List<FacilityEntity> getFacilityEntities() {
+        return facilityEntities;
+    }
+
+    public void setFacilityEntities(List<FacilityEntity> facilityEntities) {
+        this.facilityEntities = facilityEntities;
     }
 
     public Integer getId() {
@@ -74,6 +85,10 @@ public class AccountEntity {
         transactionEntities.add(transactionEntity);
         return transactionEntities;
     }
+    public List<FacilityEntity> addFacility(FacilityEntity facilityEntity) {
+        facilityEntities.add(facilityEntity);
+        return facilityEntities;
+    }
     public void setTransactionEntities(List<TransactionEntity> transactionEntities) {
         this.transactionEntities = transactionEntities;
     }
@@ -100,5 +115,13 @@ public class AccountEntity {
 
     public void setMinimumOfTheDay(BigDecimal minimumOfTheDay) {
         this.minimumOfTheDay = minimumOfTheDay;
+    }
+
+    public BigDecimal getMinimumOfMonth() {
+        return minimumOfMonth;
+    }
+
+    public void setMinimumOfMonth(BigDecimal minimumOfMonth) {
+        this.minimumOfMonth = minimumOfMonth;
     }
 }

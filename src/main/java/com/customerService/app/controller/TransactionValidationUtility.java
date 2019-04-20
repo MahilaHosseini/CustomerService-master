@@ -1,6 +1,7 @@
 package com.customerService.app.controller;
 
 
+import com.customerService.app.dto.BankFacilitiesDto;
 import com.customerService.app.dto.TransactionDto;
 import com.customerService.app.model.dao.AccountDao;
 
@@ -63,6 +64,27 @@ public class TransactionValidationUtility {
             }
         }
 
+        if (state)
+            return true;
+        else {
+            throw new Exception(errorMassage);
+        }
+    }
+    public static boolean validateFacility(BankFacilitiesDto bankFacilitiesDto, AccountDao accountDao) throws Exception {
+        errorMassage = "";
+        state = true;
+        if (Objects.isNull(bankFacilitiesDto)) {
+            errorMassage += "Facility Request Details Does Not Exist";
+            state = false;
+        } else {
+            if (Objects.isNull(bankFacilitiesDto.getAccountNumber())) {
+                errorMassage += "AccountNumber Field Is Null-";
+                state = false;
+            } else if (Objects.isNull(accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()))) {
+                errorMassage += "Account With Such AccountNumber Doesn't Exist-";
+                state = false;
+            }
+        }
         if (state)
             return true;
         else {

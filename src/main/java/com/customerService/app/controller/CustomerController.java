@@ -5,15 +5,19 @@ import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.dao.LegalPersonDao;
 import com.customerService.app.model.dao.PersonDao;
 import com.customerService.app.model.dao.RealPersonDao;
-import com.customerService.app.model.entity.AccountEntity;
-import com.customerService.app.model.entity.LegalPersonEntity;
-import com.customerService.app.model.entity.PersonEntity;
-import com.customerService.app.model.entity.RealPersonEntity;
+import com.customerService.app.model.entity.*;
 import com.customerService.app.dto.*;
 import com.customerService.app.dto.ResponseStatus;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -32,45 +36,62 @@ public class CustomerController {
     private RealPersonDao realPersonDao;
     private LegalPersonDao legalPersonDao;
     private AccountDao accountDao;
-    private Integer accountNumber = 1000100010;
+    private TransactionController transactionController;
+    @Autowired
+    private RuntimeService runtimeService;
+    @Autowired
+    private TaskService taskService;
 
-    public CustomerController(PersonDao personDao, RealPersonDao realPersonDao, LegalPersonDao legalPersonDao, AccountDao accountDao) {
+    public CustomerController(PersonDao personDao, RealPersonDao realPersonDao, LegalPersonDao legalPersonDao, TransactionController transactionController, AccountDao accountDao) {
         this.personDao = personDao;
         this.realPersonDao = realPersonDao;
         this.legalPersonDao = legalPersonDao;
+        this.transactionController = transactionController;
         this.accountDao = accountDao;
     }
 
     @RequestMapping(value = "/ws/login", method = RequestMethod.GET)
     public ResponseDto<AfterLoginInfoDto> loginSuccess() {
         AfterLoginInfoDto afterLoginInfoDto = new AfterLoginInfoDto();
-        MenuItmDto menuItmDto = new MenuItmDto(null, null, null, new ArrayList<MenuItmDto>(Arrays.asList(
-                new MenuItmDto(MenuItemType.MENU, "سامانه مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                        new MenuItmDto(MenuItemType.MENU, "افزودن مشتری جدید", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                                new MenuItmDto(MenuItemType.PAGE, "افزودن مشتری حقیقی", new UIPageDto(null, "addReal"), new ArrayList<MenuItmDto>()),
-                                new MenuItmDto(MenuItemType.PAGE, "افزودن مشتری حقوقی", new UIPageDto(null, "addLegal"), new ArrayList<MenuItmDto>())
-                        ))),
-                        new MenuItmDto(MenuItemType.MENU, " ویرایش مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                                new MenuItmDto(MenuItemType.PAGE, "ویرایش مشتری حقیقی", new UIPageDto(null, "realPersonSearch"), new ArrayList<MenuItmDto>()),
-                                new MenuItmDto(MenuItemType.PAGE, "ویرایش مشتری حقوقی", new UIPageDto(null, "legalPersonSearch"), new ArrayList<MenuItmDto>())
-                        ))),
-                        new MenuItmDto(MenuItemType.MENU, " نمایش", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                                new MenuItmDto(MenuItemType.PAGE, "نمایش مشتری حقیقی", new UIPageDto(null, "showReal"), new ArrayList<MenuItmDto>()),
-                                new MenuItmDto(MenuItemType.PAGE, "نمایش مشتری حقوقی", new UIPageDto(null, "showLegal"), new ArrayList<MenuItmDto>())
-                        ))),
-                        new MenuItmDto(MenuItemType.MENU, " حذف", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                                new MenuItmDto(MenuItemType.PAGE, "حذف مشتری حقیقی", new UIPageDto(null, "deleteReal"), new ArrayList<MenuItmDto>()),
-                                new MenuItmDto(MenuItemType.PAGE, "حذف مشتری حقوقی", new UIPageDto(null, "deleteLegal"), new ArrayList<MenuItmDto>())
-                        ))),
-                        new MenuItmDto(MenuItemType.MENU, "انجام تراکنش", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                                new MenuItmDto(MenuItemType.PAGE, "انتقال وجه ", new UIPageDto(null, "transfer"), new ArrayList<MenuItmDto>()),
-                                new MenuItmDto(MenuItemType.PAGE, "واریز وجه ", new UIPageDto(null, "deposit"), new ArrayList<MenuItmDto>()),
-                                new MenuItmDto(MenuItemType.PAGE, "برداشت وجه ", new UIPageDto(null, "removal"), new ArrayList<MenuItmDto>())
-                        ))),
-                        new MenuItmDto(MenuItemType.PAGE, "افزودن حساب", new UIPageDto(null, "addAccount"), new ArrayList<MenuItmDto>())
+        MenuItmDto menuItmDto;
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_TELLER")))
+            menuItmDto = new MenuItmDto(null, null, null, new ArrayList<MenuItmDto>(Arrays.asList(
+                    new MenuItmDto(MenuItemType.MENU, "سامانه مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                            new MenuItmDto(MenuItemType.PAGE, "کارتابل ", new UIPageDto(null, "showTasks"), new ArrayList<MenuItmDto>()),
+                            new MenuItmDto(MenuItemType.MENU, "افزودن مشتری جدید", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                                    new MenuItmDto(MenuItemType.PAGE, "افزودن مشتری حقیقی", new UIPageDto(null, "addReal"), new ArrayList<MenuItmDto>()),
+                                    new MenuItmDto(MenuItemType.PAGE, "افزودن مشتری حقوقی", new UIPageDto(null, "addLegal"), new ArrayList<MenuItmDto>())
+                            ))),
+                            new MenuItmDto(MenuItemType.PAGE, "افزودن حساب", new UIPageDto(null, "addAccount"), new ArrayList<MenuItmDto>()),
+                            new MenuItmDto(MenuItemType.PAGE, "نمايش حساب ", new UIPageDto(null, "showAccountInfo"), new ArrayList<MenuItmDto>()),
+                            new MenuItmDto(MenuItemType.PAGE, "درخواست تسهيلات ", new UIPageDto(null, "facility"), new ArrayList<MenuItmDto>()),
+                            new MenuItmDto(MenuItemType.MENU, " ویرایش مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                                    new MenuItmDto(MenuItemType.PAGE, "ویرایش مشتری حقیقی", new UIPageDto(null, "realPersonSearch"), new ArrayList<MenuItmDto>()),
+                                    new MenuItmDto(MenuItemType.PAGE, "ویرایش مشتری حقوقی", new UIPageDto(null, "legalPersonSearch"), new ArrayList<MenuItmDto>())
+                            ))),
+                            new MenuItmDto(MenuItemType.MENU, " نمایش", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                                    new MenuItmDto(MenuItemType.PAGE, "نمایش مشتری حقیقی", new UIPageDto(null, "showReal"), new ArrayList<MenuItmDto>()),
+                                    new MenuItmDto(MenuItemType.PAGE, "نمایش مشتری حقوقی", new UIPageDto(null, "showLegal"), new ArrayList<MenuItmDto>())
+                            ))),
+                            new MenuItmDto(MenuItemType.MENU, " حذف", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                                    new MenuItmDto(MenuItemType.PAGE, "حذف مشتری حقیقی", new UIPageDto(null, "deleteReal"), new ArrayList<MenuItmDto>()),
+                                    new MenuItmDto(MenuItemType.PAGE, "حذف مشتری حقوقی", new UIPageDto(null, "deleteLegal"), new ArrayList<MenuItmDto>())
+                            ))),
+                            new MenuItmDto(MenuItemType.MENU, "انجام تراکنش", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                                    new MenuItmDto(MenuItemType.PAGE, "انتقال وجه ", new UIPageDto(null, "transfer"), new ArrayList<MenuItmDto>()),
+                                    new MenuItmDto(MenuItemType.PAGE, "واریز وجه ", new UIPageDto(null, "deposit"), new ArrayList<MenuItmDto>()),
+                                    new MenuItmDto(MenuItemType.PAGE, "برداشت وجه ", new UIPageDto(null, "removal"), new ArrayList<MenuItmDto>())
+                            )))
+                    )))
+            )));
 
-                )))
-        )));
+        else
+            menuItmDto = new MenuItmDto(null, null, null, new ArrayList<MenuItmDto>(Arrays.asList(
+                    new MenuItmDto(MenuItemType.MENU, "سامانه مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
+                            new MenuItmDto(MenuItemType.PAGE, "کارتابل ", new UIPageDto(null, "showTasks"), new ArrayList<MenuItmDto>())))))));
+
+
         afterLoginInfoDto.setMenu(menuItmDto);
         return new ResponseDto(ResponseStatus.Ok, afterLoginInfoDto, null, null);
     }
@@ -108,7 +129,6 @@ public class CustomerController {
         try {
             if (CustomerValidationUtility.realPersonValidation(realPersonEntity)) {
                 if (Objects.isNull(realPersonDao.findByNationalCode(realPersonEntity.getNationalCode()))) {
-                    createAccount(realPersonEntity);
                     personDao.save(realPersonEntity);
                     logger.info("addContact web service Successfully ended !");
                     return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
@@ -173,123 +193,239 @@ public class CustomerController {
         return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Unexpected Error Has Occurred"));
     }
 
+    public Integer generateAccountNumber(Integer id) {
+        Random r = new Random();
+        return r.nextInt(500000000) + 1000000000 + id;
+    }
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/addAccount", method = RequestMethod.POST)
-    public ResponseDto<PersonEntity> addAccount(@RequestBody AccountDto accountDto) throws Exception {
+    public ResponseDto<PersonEntity> addAccount(@RequestBody AccountDto accountDto) {
         try {
             if (!Objects.isNull(realPersonDao.findByNationalCode(accountDto.getCode()))) {
                 RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(accountDto.getCode());
-                accountNumber++;
-                AccountEntity account = new AccountEntity(accountNumber.toString(), accountDto.getAccountAmount());
+                AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), accountDto.getAccountAmount());
                 realPersonEntity.addAccountEntity(account);
                 return new ResponseDto(ResponseStatus.Ok, null, " RealPerson Account Successfully Added", null);
 
-            }
-            else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(accountDto.getCode()))){
-                LegalPersonEntity legalPersonEntity =legalPersonDao.findByRegistrationCode(accountDto.getCode());
-                accountNumber++;
-                AccountEntity account = new AccountEntity(accountNumber.toString(), accountDto.getAccountAmount());
+            } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(accountDto.getCode()))) {
+                LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(accountDto.getCode());
+                AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), accountDto.getAccountAmount());
                 legalPersonEntity.addAccountEntity(account);
                 return new ResponseDto(ResponseStatus.Ok, null, " LegalPerson Account Successfully Added", null);
-            }
-            else {
-                return new ResponseDto(ResponseStatus.Ok, null, null, new ResponseException("No Such Customer!"));
+            } else {
+                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("No Such Customer!"));
 
             }
         } catch (Exception e) {
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Couldn't Create Account"));
-
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Couldn't Create Account" + e.getMessage()));
         }
 
     }
 
-    //ServiceTask
-    public void createAccount(PersonEntity personEntity) throws Exception {
+
+    private Map<String, Object> variables = new HashMap<>();
+
+    @RequestMapping(value = "/ws/activiti/startProcess", method = RequestMethod.POST)
+    public ResponseDto startProcess(BankFacilitiesDto bankFacilitiesDto) {
         try {
-            accountNumber++;
-            AccountEntity account = new AccountEntity(accountNumber.toString(), BigDecimal.valueOf(50000));
-            personEntity.addAccountEntity(account);
+            TransactionValidationUtility.validateFacility(bankFacilitiesDto, accountDao);
+            variables.put("bankFacility", bankFacilitiesDto);
+            runtimeService.startProcessInstanceByKey("Facility", variables);
+            logger.info("Activiti Process Started successfully !");
+            return new ResponseDto(ResponseStatus.Ok, null, "فرایند آغاز شد.", null);
         } catch (Exception e) {
-            throw new Exception("Couldn't Create Account");
+            logger.error("Activiti Process exited with error  !" + e.getMessage());
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Srarting Activiti process!" + e.getMessage()));
+
         }
 
+
+    }
+
+    @RequestMapping(value = "/pws/activiti/getUrlByFormKey", method = RequestMethod.POST)
+    public ResponseDto<String> getUrlByFormKey(@RequestParam String formKey) {
+        String url = "";
+        if (!Objects.isNull(formKey)) {
+            switch (formKey) {
+                case "BranchChief":
+                    url = "approveBranchTask";
+                    break;
+                case "Teller":
+                    url = "rejection";
+                    break;
+                case "Cashier":
+                    url = "payment";
+                    break;
+            }
+            logger.info("url retrieved !");
+            return new ResponseDto(ResponseStatus.Ok, url, "successfully redirected", null);
+        } else {
+            logger.error("Error getting Url By FormKey : null formKey");
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error getting Url By FormKey : null formKey"));
+        }
+    }
+
+
+    @RequestMapping(value = "/ws/activiti/getTasks", method = RequestMethod.POST)
+    public ResponseDto<List<TaskDto>> getTasks() {
+        logger.info("Getting Activiti tasks !");
+        List<Task> list = taskService.createTaskQuery().taskAssignee(getUsername()).list();
+        List<TaskDto> taskDtos = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            TaskDto taskDto = new TaskDto();
+            taskDto.setTaskId(list.get(i).getId());
+            taskDto.setName(list.get(i).getName());
+            taskDto.setFormKey(list.get(i).getFormKey());
+            taskDtos.add(taskDto);
+        }
+        logger.info("Tasks list is retrieved successfully !");
+        return new ResponseDto(ResponseStatus.Ok, taskDtos, null, null);
+    }
+
+    @RequestMapping(value = "/ws/plan/getTaskByTaskId", method = RequestMethod.POST)
+    public ResponseDto<BankFacilitiesDto> getTaskByTaskId(@RequestParam String taskId) {
+
+        if (!Objects.isNull(taskId)) {
+            Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+            Map<String, Object> taskLocalVariables = runtimeService.getVariables(task.getProcessInstanceId());
+            BankFacilitiesDto bankFacilitiesDto = (BankFacilitiesDto) taskLocalVariables.get("bankFacility");
+            bankFacilitiesDto.setTaskId(taskId);
+            logger.info("Task Is Retrieved !");
+            return new ResponseDto(ResponseStatus.Ok, bankFacilitiesDto, null, null);
+        } else {
+            logger.error("Error Getting Task By TaskId : null TaskId");
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Getting Task By TaskId : null TaskId"));
+        }
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @RequestMapping(value = "/ws/activiti/rejection", method = RequestMethod.POST)
+    public ResponseDto rejection(@RequestBody TaskDto taskDto) {
+        if (!Objects.isNull(taskDto)) {
+            Task task = taskService.createTaskQuery().taskId(taskDto.getTaskId()).singleResult();
+            Map<String, Object> taskLocalVariables = runtimeService.getVariables(task.getProcessInstanceId());
+            BankFacilitiesDto bankFacilitiesDto = (BankFacilitiesDto) taskLocalVariables.get("bankFacility");
+            FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "رد شده");
+            accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
+            taskService.complete(taskDto.getTaskId());
+            logger.info("rejecting Facility demand done successfully!");
+            return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
+        } else {
+            logger.error("Error rejecting : null taskDto");
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Rejecting : null TaskDto"));
+        }
+    }
+
+    @RequestMapping(value = "/ws/activiti/approveBranchTask", method = RequestMethod.POST)
+    public ResponseDto approveBranchTask(@RequestBody TaskDto taskDto) {
+        if (taskDto.getApprove().equals("true"))
+            variables.put("grant", true);
+        else
+            variables.put("grant", false);
+        taskService.complete(taskDto.getTaskId(), variables);
+        logger.info("Declaring Facility State Done Successfully!");
+        return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
+    }
+
+    @RequestMapping(value = "/ws/activiti/payment", method = RequestMethod.POST)
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseDto payment(@RequestBody PaymentDto paymentDto) {
+        TransactionDto transactionDto = new TransactionDto(paymentDto.getAccountNumber(), paymentDto.getAmount());
+        transactionController.deposit(transactionDto);
+        Task task = taskService.createTaskQuery().taskId(paymentDto.getTaskId()).singleResult();
+        Map<String, Object> taskLocalVariables = runtimeService.getVariables(task.getProcessInstanceId());
+        BankFacilitiesDto bankFacilitiesDto = (BankFacilitiesDto) taskLocalVariables.get("bankFacility");
+        FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "تائيد و واريز شده");
+        accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
+        taskService.complete(paymentDto.getTaskId());
+        logger.info("Depositing Facility Demand Done Successfully!");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
+    }
+
+    private String getUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
     }
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/saveLegalPerson", method = RequestMethod.POST)
     public ResponseDto<LegalPersonEntity> saveLegal(@RequestBody LegalPersonEntity legalPersonEntity) {
 
-        logger.info("saveLegalPerson web service is starting !");
+        logger.info("SaveLegalPerson Web Service Is Starting !");
         try {
             if (CustomerValidationUtility.legalPersonValidation(legalPersonEntity) && CustomerValidationUtility.accountValidation(legalPersonEntity.getAccountEntities())) {
                 try {
                     personDao.save(legalPersonEntity);
                 } catch (Exception e) {
-                    logger.error("saveLegalPerson web service is exiting with errors : " + e);
+                    logger.error("SaveLegalPerson Web Service Is Exiting With Errors : " + e);
                     return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
                 }
-                logger.info("saveLegalPerson web service is Successfully ended !");
+                logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
                 return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
             }
         } catch (Exception errorMassage) {
-            logger.error("saveLegalPerson web service is exiting with errors : " + errorMassage.getMessage());
+            logger.error("SaveLegalPerson Web Service Is Exiting With Errors : " + errorMassage.getMessage());
             return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(errorMassage.getMessage()));
         }
-        logger.error("addContact web service is exiting with errors: Unexpected Error Has Occurred");
+        logger.error("AddContact Web Service Is Exiting With Errors: Unexpected Error Has Occurred");
         return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Unexpected Error Has Occurred"));
     }
 
 
     @RequestMapping(value = "/ws/uniqueRealSearch", method = RequestMethod.POST)
     public ResponseDto<RealPersonEntity> uniqueRealSearch(@RequestParam String nationalCode) {
-        logger.info("uniqueRealSearch web service is starting !");
+        logger.info("UniqueRealSearch Web Service Is Starting !");
         RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(nationalCode);
         if (!Objects.isNull(realPersonEntity)) {
-            logger.info("uniqueRealSearch web service is Successfully ended !");
+            logger.info("UniqueRealSearch Web Service Is Successfully Ended !");
             return new ResponseDto(ResponseStatus.Ok, realPersonEntity, null, null);
         }
-        logger.error("uniqueRealSearch web service is exiting with  *NO Such Customer*  error !");
+        logger.error("UniqueRealSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
         return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("NO Such Customer"));
     }
 
     @RequestMapping(value = "/ws/uniqueLegalSearch", method = RequestMethod.POST)
     public ResponseDto<LegalPersonEntity> uniqueLegalSearch(@RequestParam String registrationCode) {
-        logger.info("uniqueLegalSearch web service is starting !");
+        logger.info("UniqueLegalSearch Web Service Is Starting !");
         LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(registrationCode);
         if (!Objects.isNull(legalPersonEntity)) {
-            logger.info("uniqueLegalSearch web service is Successfully ended !");
+            logger.info("UniqueLegalSearch Web Service Is Successfully Ended !");
             return new ResponseDto(ResponseStatus.Ok, legalPersonEntity, null, null);
         }
-        logger.error("uniqueLegalSearch web service is exiting with  *NO Such Customer*  error !");
+        logger.error("UniqueLegalSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
         return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("NO Such Customer"));
     }
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/deleteLegalPerson", method = RequestMethod.POST)
     public ResponseDto<LegalPersonEntity> deleteLegal(@RequestBody LegalPersonEntity legalPersonEntity) {
-        logger.info("deleteLegalPerson web service is starting !");
+        logger.info("DeleteLegalPerson Web Service Is Starting !");
         try {
             personDao.delete(legalPersonEntity);
-            logger.info("deleteLegalPerson web service is Successfully ended !");
-            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted!", null);
+            logger.info("DeleteLegalPerson Web Service Is Successfully Ended");
+            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted", null);
         } catch (Exception e) {
-            logger.error("deleteLegalPerson web service is exiting with errors : " + e);
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("error "));
+            logger.error("DeleteLegalPerson Web Service Is Exiting With Errors : " + e);
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error"));
         }
     }
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/deleteRealPerson", method = RequestMethod.POST)
     public ResponseDto<RealPersonEntity> delete(@RequestBody RealPersonEntity realPersonEntity) {
-        logger.info("deleteRealPerson web service is starting !");
+        logger.info("DeleteRealPerson Web Service Is Starting");
         try {
             personDao.delete(realPersonEntity);
-            logger.info("deleteRealPerson web service is Successfully ended !");
+            logger.info("DeleteRealPerson Web Service Is Successfully Ended !");
             return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted!", null);
         } catch (Exception e) {
-            logger.error("deleteRealPerson web service is exiting with errors : " + e);
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("error "));
+            logger.error("DeleteRealPerson Web Service Is Exiting With Errors : " + e);
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error "));
         }
     }
 

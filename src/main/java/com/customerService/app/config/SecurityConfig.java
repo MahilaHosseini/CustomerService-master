@@ -1,4 +1,4 @@
-package com.customerService.app;
+package com.customerService.app.config;
 
 import com.customerService.app.filters.SimpleCORSFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("a").password(passwordEncoder().encode("a")).roles("ADMIN");
+                .withUser("Teller").password(passwordEncoder().encode("a")).roles("ADMIN","TELLER")
+        .and()
+                .withUser("Cashier").password(passwordEncoder().encode("b")).roles("ADMIN","CASHIER")
+        .and()
+                .withUser("BranchChief").password(passwordEncoder().encode("c")).roles("ADMIN","CHIEF");
     }
 
     @Override

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<page title="نمایش حساب">
+    <section title="جستجو">
+        <search label="شماره حساب:"
+                singleResultSearch="ws/search"
+                singleResultSearchInputkey="accountNumber"
+                value="obj">
+        </search>
+    </section>
+    <section title="مشخصات حساب">
+        <input label="شماره حساب :" type="text" value="obj.accountNumber" disable="true"/>
+        <input label="موجودي :" type="text" value="obj.accountAmount" disable="true"/>
+        <input label="تاريخ افتتاح حساب :" type="text" value="obj.openingDate" disable="true"/>
+        <table label="تسهيلات" value="obj.facilityEntities">
+            <input label="نوع تسهيلات :" type="text" value="facilityType" disable="true"/>
+            <input label="مبلغ تسهيلات :" type="text" value="amount" disable="true"/>
+            <input label="وضعيت تسهيلات :" type="text" value="approvalState" disable="true"/>
+        </table>
+        <table label="تراکنش" value="obj.transactionEntities">
+            <input label="نوع تراکنش :" type="text" value="transactionType" disable="true"/>
+            <input label="مبلغ :" type="text" value="amount" disable="true"/>
+            <input label="حساب مقصد :" type="text" value="destinationAccountNumber" disable="true"/>
+            <input label="تاریخ انجام تراکنش :" type="date" value="transactionDate" disable="true"/>
+        </table>
+
+
+    </section>
+</page>

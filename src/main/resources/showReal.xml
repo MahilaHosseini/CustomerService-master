@@ -24,12 +24,7 @@
     <input label="آدرس :" type="text" value="obj.address" disable="true"/>
     <table label="شماره تلفن" value="obj.numbers"  >
         <input label="تلفن :" type="text" value="number" disable="true"/>
-        <comboBox label="نوع :" value="type" disable="true">
-            <comboItem itemLabel="همراه" itemValue="MOBILE" />
-            <comboItem itemLabel="ثابت" itemValue="HOME" />
-            <comboItem itemLabel="فکس" itemValue="FAX" />
-            <comboItem itemLabel="سایر" itemValue="OTHER" />
-        </comboBox>
+        <input label="نوع :" type="text" value="type" disable="true"/>
     </table>
     <table label="سپرده" value="obj.accountEntities" >
         <table label="تراکنش" value="transactionEntities" >
@@ -42,5 +37,6 @@
         <input label="موجودی :" type="text" value="accountAmount" disable="true"/>
         <input label="تاریخ افتتاح حساب :" type="text" value="openingDate" disable="true"/>
     </table>
+
 </section>
 </page>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<page title="رد درخواست تسهيلات">
+    <section title="رد درخواست تسهيلات">
+        <actions>
+            <button label="ابلاغ به مشتري">
+                <webService clearPageOnSuccess="true" address="ws/activiti/rejection"></webService>
+            </button>
+        </actions>
+    </section>
+</page>

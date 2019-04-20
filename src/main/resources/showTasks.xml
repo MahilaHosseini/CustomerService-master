@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<page title="کارتابل">
+    <init>
+        <webService value="obj" address="ws/activiti/getTasks"/>
+    </init>
+
+    <section title="کارتابل">
+        <table label="درخواست ها" value="obj">
+            <input label="نام :" type="text" value="name" disable="true"/>
+            <input label="شماره درخواست :" type="text" value="taskId" disable="true"/>
+            <button label="مشاهده تسك">
+                <webService value="resultObject" address="pws/activiti/getUrlByFormKey">
+                    <webServiceInput ref="currentRow.formKey" name="formKey"/>
+                    <afterSuccess>
+                        <action type="page" attC="currentRow.taskId" attB="resultObject" attA="ref"/>
+                    </afterSuccess>
+                </webService>
+            </button>
+        </table>
+    </section>
+</page>
