@@ -5,17 +5,16 @@ import com.customerService.app.dto.ResponseStatus;
 import com.customerService.app.dto.TransactionDto;
 import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.entity.*;
+import com.customerService.app.utility.BenefitCalculation;
+import com.customerService.app.utility.TransactionValidationUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 @RestController

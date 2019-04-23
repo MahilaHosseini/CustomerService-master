@@ -1,4 +1,4 @@
-package com.customerService.app.controller;
+package com.customerService.app.utility;
 
 import com.customerService.app.model.entity.AccountEntity;
 import com.customerService.app.model.entity.CallNumberEntity;
@@ -18,7 +18,7 @@ public class CustomerValidationUtility {
     private static Logger logger = LoggerFactory.getLogger(CustomerValidationUtility.class);
     private static String errorMessage;
 
-    public static boolean legalPersonValidation(LegalPersonEntity legalPersonEntity) throws Exception {
+    public static boolean legalPersonValidation(LegalPersonEntity legalPersonEntity) throws LegalPersonException {
         validationState = true;
         if (Objects.isNull(legalPersonEntity)) {
             errorMessage = "object is null-";
@@ -67,11 +67,11 @@ public class CustomerValidationUtility {
         if (validationState)
             return validationState;
         else {
-            throw new Exception(errorMessage);
+            throw new LegalPersonException(errorMessage);
         }
     }
 
-    public static boolean realPersonValidation(RealPersonEntity realPersonEntity) throws Exception{
+    public static boolean realPersonValidation(RealPersonEntity realPersonEntity) throws RealPersonException{
         validationState = true;
         if (Objects.isNull(realPersonEntity)) {
             errorMessage = "object is null-";
@@ -125,7 +125,7 @@ public class CustomerValidationUtility {
         if (validationState)
             return true;
         else {
-            throw new Exception(errorMessage);
+            throw new RealPersonException(errorMessage);
         }
     }
 
@@ -172,7 +172,7 @@ public class CustomerValidationUtility {
         }
         return validationState;
     }
-    public static boolean accountValidation(List<AccountEntity> accountEntities)  throws Exception {
+    public static boolean accountValidation(List<AccountEntity> accountEntities)  throws AccountException {
         if (!Objects.isNull(accountEntities)) {
             for (AccountEntity accountEntity : accountEntities) {
                 if (accountEntity.getAccountAmount().compareTo(new BigDecimal(10000))==-1) {
@@ -187,7 +187,7 @@ public class CustomerValidationUtility {
         if (validationState)
             return true;
         else {
-            throw new Exception(errorMessage);
+            throw new AccountException(errorMessage);
         }
     }
 

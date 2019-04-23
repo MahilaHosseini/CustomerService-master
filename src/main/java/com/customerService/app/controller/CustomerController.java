@@ -8,6 +8,10 @@ import com.customerService.app.model.dao.RealPersonDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.dto.*;
 import com.customerService.app.dto.ResponseStatus;
+import com.customerService.app.utility.CustomerValidationUtility;
+import com.customerService.app.utility.LegalPersonException;
+import com.customerService.app.utility.RealPersonException;
+import com.customerService.app.utility.TransactionValidationUtility;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
@@ -22,7 +26,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -111,9 +114,11 @@ public class CustomerController {
     public ResponseDto error(@RequestParam String code) {
         switch (code) {
             case "loginFailure":
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("نام کاربری یا کلمه عبور درست وارد نشده"));
+                logger.error("Wrong UserName Or Password");
+                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Wrong UserName Or Password"));
             default:
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("خطای سیستمی رخ داده است"));
+                logger.error("Login System Error");
+                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("System Error"));
         }
     }
 
@@ -124,48 +129,32 @@ public class CustomerController {
 
 
     @RequestMapping(value = "/ws/addRealContact", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonEntity realPersonEntity) {
+    public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException {
         logger.info("addContact web service is running!");
-        try {
-            if (CustomerValidationUtility.realPersonValidation(realPersonEntity)) {
-                if (Objects.isNull(realPersonDao.findByNationalCode(realPersonEntity.getNationalCode()))) {
-                    personDao.save(realPersonEntity);
-                    logger.info("addContact web service Successfully ended !");
-                    return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
-                }
-                logger.error("addContact web service is exiting with  *Duplicate National code*  error!");
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Duplicate National code"));
-
-            }
-        } catch (Exception errorMessage) {
-            logger.error("addContact web service is exiting with errors: " + errorMessage.getMessage());
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(errorMessage.getMessage()));
+        CustomerValidationUtility.realPersonValidation(realPersonEntity);
+        if (Objects.isNull(realPersonDao.findByNationalCode(realPersonEntity.getNationalCode()))) {
+            personDao.save(realPersonEntity);
+            logger.info("AddContact Web Service Successfully Ended !");
+            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
+        } else {
+            logger.error("AddContact Web Service Is Exiting With  *Duplicate NationalCode*  Error");
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Duplicate NationalCode"));
         }
-        logger.error("addContact web service is exiting with errors: Unexpected Error Has Occurred");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Unexpected Error Has Occurred"));
-
     }
 
     @RequestMapping(value = "/ws/addLegalContact", method = RequestMethod.POST)
-    public ResponseDto<LegalPersonEntity> addLegalContact(@RequestBody LegalPersonEntity legalPersonEntity) {
+    public ResponseDto<LegalPersonEntity> addLegalContact(@RequestBody LegalPersonEntity legalPersonEntity) throws LegalPersonException {
         logger.info("addLegalContact web service Successfully ended !");
-        try {
-            if (CustomerValidationUtility.legalPersonValidation(legalPersonEntity)) {
-                if (Objects.isNull(legalPersonDao.findByRegistrationCode(legalPersonEntity.getRegistrationCode()))) {
-                    personDao.save(legalPersonEntity);
-                    logger.info("addLegalContact web service Successfully ended !");
-                    return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
-                }
-                logger.error("addLegalContact web service is exiting with  *Duplicate Registration code*  error!");
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Duplicate Registration Code"));
+        CustomerValidationUtility.legalPersonValidation(legalPersonEntity);
+        if (Objects.isNull(legalPersonDao.findByRegistrationCode(legalPersonEntity.getRegistrationCode()))) {
+            personDao.save(legalPersonEntity);
+            logger.info("addLegalContact web service Successfully ended !");
+            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
+        } else {
+            logger.error("addLegalContact web service is exiting with  *Duplicate Registration code*  error!");
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Duplicate Registration Code"));
 
-            }
-        } catch (Exception errorMessage) {
-            logger.error("addLegalContact web service is exiting with errors : " + errorMessage.getMessage());
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(errorMessage.getMessage()));
         }
-        logger.error("addContact web service is exiting with errors: Unexpected Error Has Occurred");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Unexpected Error Has Occurred"));
     }
 
     @Transactional(rollbackOn = Exception.class)

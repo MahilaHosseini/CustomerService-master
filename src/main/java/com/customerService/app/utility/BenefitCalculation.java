@@ -1,4 +1,4 @@
-package com.customerService.app.controller;
+package com.customerService.app.utility;
 
 public interface BenefitCalculation {
 

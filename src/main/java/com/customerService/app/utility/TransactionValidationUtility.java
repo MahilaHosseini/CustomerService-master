@@ -1,4 +1,4 @@
-package com.customerService.app.controller;
+package com.customerService.app.utility;
 
 
 import com.customerService.app.dto.BankFacilitiesDto;
@@ -14,7 +14,7 @@ public class TransactionValidationUtility {
     private static String errorMassage;
 
 
-    public static boolean validateTransfer(TransactionDto transactionDto, AccountDao accountDao) throws Exception {
+    public static boolean validateTransfer(TransactionDto transactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
         if (Objects.isNull(transactionDto)) {
@@ -43,11 +43,11 @@ public class TransactionValidationUtility {
         if (state)
             return true;
         else {
-            throw new Exception(errorMassage);
+            throw new TransactionException(errorMassage);
         }
     }
 
-    public static boolean validateDeposit(TransactionDto transactionDto, AccountDao accountDao) throws Exception {
+    public static boolean validateDeposit(TransactionDto transactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
         if (Objects.isNull(transactionDto)) {
@@ -67,10 +67,10 @@ public class TransactionValidationUtility {
         if (state)
             return true;
         else {
-            throw new Exception(errorMassage);
+            throw new TransactionException(errorMassage);
         }
     }
-    public static boolean validateFacility(BankFacilitiesDto bankFacilitiesDto, AccountDao accountDao) throws Exception {
+    public static boolean validateFacility(BankFacilitiesDto bankFacilitiesDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
         if (Objects.isNull(bankFacilitiesDto)) {
@@ -88,12 +88,12 @@ public class TransactionValidationUtility {
         if (state)
             return true;
         else {
-            throw new Exception(errorMassage);
+            throw new TransactionException(errorMassage);
         }
     }
 
 
-    public static boolean validateRemoval(TransactionDto transactionDto, AccountDao accountDao) throws Exception {
+    public static boolean validateRemoval(TransactionDto transactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
         if (Objects.isNull(transactionDto)) {
@@ -115,7 +115,7 @@ public class TransactionValidationUtility {
         if (state)
             return true;
         else {
-            throw new Exception(errorMassage);
+            throw new TransactionException(errorMassage);
         }
     }
 
