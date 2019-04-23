@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <page title=" پرداخت تسهيلات">
     <init>
-        <webService value="obj" address="ws/plan/getTaskByTaskId">
-            <webServiceInput ref="urlParams.taskId" name="taskId"/>
+        <webService address="ws/plan/getTaskByTaskId" value="obj">
+            <webServiceInput name="taskId" ref="urlParams.taskId"/>
         </webService>
     </init>
     <section title="مشخصات مشتری">
-        <input label="شماره حساب :" type="text" value="obj.accountNumber"/>
-        <input label="مقدار :" type="date" value="obj.amount"/>
-        <input label="شماره درخواست :" type="text" value="obj.taskId"/>
-        <input label="نوع تسهيلات :" type="text" value="obj.facilityType"/>
+        <input label="شماره درخواست :" type="text" value="obj.taskId" disable="true"/>
+        <input label="مبلغ تهسيلات :" type="text" value="obj.amount" disable="true"/>
+        <input label="شماره حساب :" type="text" value="obj.accountNumber" disable="true"/>
+        <input label="نوع تسهيلات :" type="text" value="obj.facilityType" disable="true"/>
+        <input label="نتیجه بررسی :" type="text" value="obj.approve" disable="true"/>
         <actions>
             <button label="پرداخت">
                 <webService address="ws/activiti/payment" clearPageOnSuccess="true">

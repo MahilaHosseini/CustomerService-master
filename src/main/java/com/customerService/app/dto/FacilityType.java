@@ -5,7 +5,7 @@ public enum FacilityType {
     CarLoan("وام خرید خودرو"),
     LandLoan("وام خرید زمین"),
     HouseLoan("وام مسکن"),
-    MarageLoan("وام ازدواج"),
+    MarriageLoan("وام ازدواج"),
     BenefitFreeLoan("وام قرض الحسنه");
     private String value;
 

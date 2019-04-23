@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <page title="کارتابل">
     <init>
-        <webService value="obj" address="ws/activiti/getTasks"/>
+        <webService address="ws/activiti/getTasks" value="obj" />
     </init>
 
     <section title="کارتابل">

@@ -7,13 +7,24 @@ public class BankFacilitiesDto {
     private BigDecimal amount;
     private String accountNumber;
     private String taskId;
+    private String approve;
 
-    public String getTaskId() {
-        return taskId;
+    public BankFacilitiesDto() {
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public BankFacilitiesDto(String facilityType, BigDecimal amount, String accountNumber) {
+
+        this.facilityType = FacilityType.valueOf(facilityType);
+        this.amount = amount;
+        this.accountNumber = accountNumber;
+    }
+
+    public String getApprove() {
+        return approve;
+    }
+
+    public void setApprove(String approve) {
+        this.approve = approve;
     }
 
     public FacilityType getFacilityType() {
@@ -38,5 +49,13 @@ public class BankFacilitiesDto {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 }

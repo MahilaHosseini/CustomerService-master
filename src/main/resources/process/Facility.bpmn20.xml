@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef" xmlns:modeler="http://activiti.com/modeler" modeler:version="1.0ev" modeler:exportDateTime="20190418120641" modeler:modelId="1059346" modeler:modelVersion="1" modeler:modelLastUpdated="1555585595853">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef" xmlns:modeler="http://activiti.com/modeler" modeler:version="1.0ev" modeler:exportDateTime="20190423140647" modeler:modelId="1059346" modeler:modelVersion="1" modeler:modelLastUpdated="1556024702688">
   <process id="Facility" name="Facility" isExecutable="true">
     <startEvent id="startEvent1">
       <extensionElements>
@@ -27,7 +27,7 @@
         <modeler:editor-resource-id><![CDATA[sid-553D2703-5DC9-480E-B73D-9B408ADF814A]]></modeler:editor-resource-id>
       </extensionElements>
     </userTask>
-    <exclusiveGateway id="sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C">
+    <exclusiveGateway id="decision" name="Decision">
       <extensionElements>
         <modeler:editor-resource-id><![CDATA[sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C]]></modeler:editor-resource-id>
       </extensionElements>
@@ -52,32 +52,32 @@
         <modeler:editor-resource-id><![CDATA[sid-475F0122-CA4F-4A87-AE26-07DB04A6C757]]></modeler:editor-resource-id>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="sid-84C0038A-3097-4AD7-B9EC-07D65DCB0147" sourceRef="sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C" targetRef="sid-931A7A75-5309-4ADC-97C5-2DC8DA4DB0DC">
-      <extensionElements>
-        <modeler:editor-resource-id><![CDATA[sid-84C0038A-3097-4AD7-B9EC-07D65DCB0147]]></modeler:editor-resource-id>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="sid-8DC83C1B-5C77-45DD-9456-55396200741D" sourceRef="sid-F7F1EF48-6D24-448E-89EA-7322F44D7217" targetRef="sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C">
-      <extensionElements>
-        <modeler:editor-resource-id><![CDATA[sid-8DC83C1B-5C77-45DD-9456-55396200741D]]></modeler:editor-resource-id>
-      </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="sid-2A06BA4F-B3E7-4792-AB8A-375BCCFA80EE" sourceRef="sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C" targetRef="sid-553D2703-5DC9-480E-B73D-9B408ADF814A">
-      <extensionElements>
-        <modeler:editor-resource-id><![CDATA[sid-2A06BA4F-B3E7-4792-AB8A-375BCCFA80EE]]></modeler:editor-resource-id>
-      </extensionElements>
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${grant == true}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="sid-B160E0C2-020E-4605-B11F-7DF00230AC59" sourceRef="sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C" targetRef="sid-931A7A75-5309-4ADC-97C5-2DC8DA4DB0DC">
-      <extensionElements>
-        <modeler:editor-resource-id><![CDATA[sid-B160E0C2-020E-4605-B11F-7DF00230AC59]]></modeler:editor-resource-id>
-      </extensionElements>
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${grant == false}]]></conditionExpression>
-    </sequenceFlow>
     <sequenceFlow id="sid-ED297D58-60F1-4E87-80A0-9CFF519D0A14" sourceRef="startEvent1" targetRef="sid-F7F1EF48-6D24-448E-89EA-7322F44D7217">
       <extensionElements>
         <modeler:editor-resource-id><![CDATA[sid-ED297D58-60F1-4E87-80A0-9CFF519D0A14]]></modeler:editor-resource-id>
       </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-8DC83C1B-5C77-45DD-9456-55396200741D" sourceRef="sid-F7F1EF48-6D24-448E-89EA-7322F44D7217" targetRef="decision">
+      <extensionElements>
+        <modeler:editor-resource-id><![CDATA[sid-8DC83C1B-5C77-45DD-9456-55396200741D]]></modeler:editor-resource-id>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-2A06BA4F-B3E7-4792-AB8A-375BCCFA80EE" name="accept" sourceRef="decision" targetRef="sid-553D2703-5DC9-480E-B73D-9B408ADF814A">
+      <extensionElements>
+        <modeler:editor-resource-id><![CDATA[sid-2A06BA4F-B3E7-4792-AB8A-375BCCFA80EE]]></modeler:editor-resource-id>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${grant == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-84C0038A-3097-4AD7-B9EC-07D65DCB0147" sourceRef="decision" targetRef="sid-931A7A75-5309-4ADC-97C5-2DC8DA4DB0DC">
+      <extensionElements>
+        <modeler:editor-resource-id><![CDATA[sid-84C0038A-3097-4AD7-B9EC-07D65DCB0147]]></modeler:editor-resource-id>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="sid-B160E0C2-020E-4605-B11F-7DF00230AC59" name="reject" sourceRef="decision" targetRef="sid-931A7A75-5309-4ADC-97C5-2DC8DA4DB0DC">
+      <extensionElements>
+        <modeler:editor-resource-id><![CDATA[sid-B160E0C2-020E-4605-B11F-7DF00230AC59]]></modeler:editor-resource-id>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${grant == 0}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_Facility">
@@ -94,7 +94,7 @@
       <bpmndi:BPMNShape bpmnElement="sid-553D2703-5DC9-480E-B73D-9B408ADF814A" id="BPMNShape_sid-553D2703-5DC9-480E-B73D-9B408ADF814A">
         <omgdc:Bounds height="80.0" width="100.0" x="765.0" y="30.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C" id="BPMNShape_sid-7499D51D-5A7C-4FE4-BA93-68EC28459B7C">
+      <bpmndi:BPMNShape bpmnElement="decision" id="BPMNShape_decision">
         <omgdc:Bounds height="40.0" width="40.0" x="600.0" y="158.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-A48F1D2D-6BC1-4A1F-B9DB-5F15E5C4B483" id="BPMNShape_sid-A48F1D2D-6BC1-4A1F-B9DB-5F15E5C4B483">
@@ -123,13 +123,13 @@
         <omgdi:waypoint x="415.0" y="178.0"/>
         <omgdi:waypoint x="600.0" y="178.0"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="sid-B160E0C2-020E-4605-B11F-7DF00230AC59" id="BPMNEdge_sid-B160E0C2-020E-4605-B11F-7DF00230AC59">
-        <omgdi:waypoint x="633.6512455516014" y="184.34875444839858"/>
-        <omgdi:waypoint x="765.0" y="242.76349614395886"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-ED297D58-60F1-4E87-80A0-9CFF519D0A14" id="BPMNEdge_sid-ED297D58-60F1-4E87-80A0-9CFF519D0A14">
         <omgdi:waypoint x="130.0" y="178.0"/>
         <omgdi:waypoint x="315.0" y="178.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B160E0C2-020E-4605-B11F-7DF00230AC59" id="BPMNEdge_sid-B160E0C2-020E-4605-B11F-7DF00230AC59">
+        <omgdi:waypoint x="633.6512455516014" y="184.34875444839858"/>
+        <omgdi:waypoint x="765.0" y="242.76349614395886"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -8,10 +8,7 @@ import com.customerService.app.model.dao.RealPersonDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.dto.*;
 import com.customerService.app.dto.ResponseStatus;
-import com.customerService.app.utility.CustomerValidationUtility;
-import com.customerService.app.utility.LegalPersonException;
-import com.customerService.app.utility.RealPersonException;
-import com.customerService.app.utility.TransactionValidationUtility;
+import com.customerService.app.utility.*;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
@@ -25,7 +22,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import javax.transaction.TransactionalException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,6 +39,7 @@ public class CustomerController {
     private LegalPersonDao legalPersonDao;
     private AccountDao accountDao;
     private TransactionController transactionController;
+
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
@@ -58,10 +58,10 @@ public class CustomerController {
         AfterLoginInfoDto afterLoginInfoDto = new AfterLoginInfoDto();
         MenuItmDto menuItmDto;
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_TELLER")))
+        if (principal.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_Teller")))
             menuItmDto = new MenuItmDto(null, null, null, new ArrayList<MenuItmDto>(Arrays.asList(
+                    new MenuItmDto(MenuItemType.PAGE, "کارتابل ", new UIPageDto(null, "showTasks"), new ArrayList<MenuItmDto>()),
                     new MenuItmDto(MenuItemType.MENU, "سامانه مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                            new MenuItmDto(MenuItemType.PAGE, "کارتابل ", new UIPageDto(null, "showTasks"), new ArrayList<MenuItmDto>()),
                             new MenuItmDto(MenuItemType.MENU, "افزودن مشتری جدید", null, new ArrayList<MenuItmDto>(Arrays.asList(
                                     new MenuItmDto(MenuItemType.PAGE, "افزودن مشتری حقیقی", new UIPageDto(null, "addReal"), new ArrayList<MenuItmDto>()),
                                     new MenuItmDto(MenuItemType.PAGE, "افزودن مشتری حقوقی", new UIPageDto(null, "addLegal"), new ArrayList<MenuItmDto>())
@@ -91,8 +91,7 @@ public class CustomerController {
 
         else
             menuItmDto = new MenuItmDto(null, null, null, new ArrayList<MenuItmDto>(Arrays.asList(
-                    new MenuItmDto(MenuItemType.MENU, "سامانه مشتریان", null, new ArrayList<MenuItmDto>(Arrays.asList(
-                            new MenuItmDto(MenuItemType.PAGE, "کارتابل ", new UIPageDto(null, "showTasks"), new ArrayList<MenuItmDto>())))))));
+                    new MenuItmDto(MenuItemType.PAGE, "کارتابل ", new UIPageDto(null, "showTasks"), new ArrayList<MenuItmDto>()))));
 
 
         afterLoginInfoDto.setMenu(menuItmDto);
@@ -159,27 +158,22 @@ public class CustomerController {
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/saveRealPerson", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> save(@RequestBody RealPersonEntity realPersonEntity) {
+    public ResponseDto<RealPersonEntity> save(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException, AccountException {
 
         logger.info("saveRealPerson web service is starting !");
-        try {
-            if (CustomerValidationUtility.realPersonValidation(realPersonEntity) && CustomerValidationUtility.accountValidation(realPersonEntity.getAccountEntities())) {
-                try {
 
-                    realPersonDao.save(realPersonEntity);
-                } catch (Exception e) {
-                    logger.error("saveRealPerson web service is exiting with errors : " + e);
-                    return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
-                }
-                logger.info("saveRealPerson web service Successfully ended !");
-                return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
-            }
-        } catch (Exception errorMessage) {
-            logger.error("saveRealPerson web service is exiting with errors : " + errorMessage.getMessage());
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(errorMessage.getMessage()));
+        CustomerValidationUtility.realPersonValidation(realPersonEntity);
+        CustomerValidationUtility.accountValidation(realPersonEntity.getAccountEntities());
+        try {
+            realPersonDao.save(realPersonEntity);
+        } catch (Exception e) {
+            logger.error("saveRealPerson web service is exiting with errors : " + e);
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
         }
-        logger.error("addContact web service is exiting with errors: Unexpected Error Has Occurred");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Unexpected Error Has Occurred"));
+        logger.info("saveRealPerson web service Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
+
+
     }
 
     public Integer generateAccountNumber(Integer id) {
@@ -190,46 +184,40 @@ public class CustomerController {
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/addAccount", method = RequestMethod.POST)
     public ResponseDto<PersonEntity> addAccount(@RequestBody AccountDto accountDto) {
-        try {
-            if (!Objects.isNull(realPersonDao.findByNationalCode(accountDto.getCode()))) {
-                RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(accountDto.getCode());
-                AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), accountDto.getAccountAmount());
-                realPersonEntity.addAccountEntity(account);
-                return new ResponseDto(ResponseStatus.Ok, null, " RealPerson Account Successfully Added", null);
 
-            } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(accountDto.getCode()))) {
-                LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(accountDto.getCode());
-                AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), accountDto.getAccountAmount());
-                legalPersonEntity.addAccountEntity(account);
-                return new ResponseDto(ResponseStatus.Ok, null, " LegalPerson Account Successfully Added", null);
-            } else {
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("No Such Customer!"));
+        if (!Objects.isNull(realPersonDao.findByNationalCode(accountDto.getCode()))) {
+            RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(accountDto.getCode());
+            AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), accountDto.getAccountAmount());
+            realPersonEntity.addAccountEntity(account);
+            return new ResponseDto(ResponseStatus.Ok, null, " RealPerson Account Successfully Added", null);
 
-            }
-        } catch (Exception e) {
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Couldn't Create Account" + e.getMessage()));
+        } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(accountDto.getCode()))) {
+            LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(accountDto.getCode());
+            AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), accountDto.getAccountAmount());
+            legalPersonEntity.addAccountEntity(account);
+            return new ResponseDto(ResponseStatus.Ok, null, " LegalPerson Account Successfully Added", null);
+        } else {
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("No Such Customer!"));
         }
+
 
     }
 
-
-    private Map<String, Object> variables = new HashMap<>();
-
     @RequestMapping(value = "/ws/activiti/startProcess", method = RequestMethod.POST)
-    public ResponseDto startProcess(BankFacilitiesDto bankFacilitiesDto) {
-        try {
-            TransactionValidationUtility.validateFacility(bankFacilitiesDto, accountDao);
-            variables.put("bankFacility", bankFacilitiesDto);
+    public ResponseDto startProcess(@RequestBody BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
+        if (TransactionValidationUtility.validateFacility(bankFacilitiesDto, accountDao)) {
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("bankFacilityAccNum", bankFacilitiesDto.getAccountNumber());
+            variables.put("bankFacilityAccAmount", bankFacilitiesDto.getAmount());
+            variables.put("bankFacilityType", bankFacilitiesDto.getFacilityType());
+            variables.put("bankFacilityId", bankFacilitiesDto.getTaskId());
             runtimeService.startProcessInstanceByKey("Facility", variables);
             logger.info("Activiti Process Started successfully !");
             return new ResponseDto(ResponseStatus.Ok, null, "فرایند آغاز شد.", null);
-        } catch (Exception e) {
-            logger.error("Activiti Process exited with error  !" + e.getMessage());
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Srarting Activiti process!" + e.getMessage()));
-
+        } else {
+            logger.error("Activiti Process exited with error  !");
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Srarting Activiti process!"));
         }
-
-
     }
 
     @RequestMapping(value = "/pws/activiti/getUrlByFormKey", method = RequestMethod.POST)
@@ -278,8 +266,13 @@ public class CustomerController {
         if (!Objects.isNull(taskId)) {
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             Map<String, Object> taskLocalVariables = runtimeService.getVariables(task.getProcessInstanceId());
-            BankFacilitiesDto bankFacilitiesDto = (BankFacilitiesDto) taskLocalVariables.get("bankFacility");
+            BankFacilitiesDto bankFacilitiesDto = new BankFacilitiesDto(taskLocalVariables.get("bankFacilityType").toString(), new BigDecimal(taskLocalVariables.get("bankFacilityAccAmount").toString()), (String) taskLocalVariables.get("bankFacilityAccNum"));
             bankFacilitiesDto.setTaskId(taskId);
+            if (!Objects.isNull(taskLocalVariables.get("grant")))
+                if (taskLocalVariables.get("grant").toString().equals(1))
+                    bankFacilitiesDto.setApprove("approved");
+                else
+                    bankFacilitiesDto.setApprove("rejected");
             logger.info("Task Is Retrieved !");
             return new ResponseDto(ResponseStatus.Ok, bankFacilitiesDto, null, null);
         } else {
@@ -290,44 +283,39 @@ public class CustomerController {
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/activiti/rejection", method = RequestMethod.POST)
-    public ResponseDto rejection(@RequestBody TaskDto taskDto) {
-        if (!Objects.isNull(taskDto)) {
-            Task task = taskService.createTaskQuery().taskId(taskDto.getTaskId()).singleResult();
-            Map<String, Object> taskLocalVariables = runtimeService.getVariables(task.getProcessInstanceId());
-            BankFacilitiesDto bankFacilitiesDto = (BankFacilitiesDto) taskLocalVariables.get("bankFacility");
+    public ResponseDto rejection(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
+        if (!Objects.isNull(bankFacilitiesDto)) {
             FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "رد شده");
             accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
-            taskService.complete(taskDto.getTaskId());
+            taskService.complete(bankFacilitiesDto.getTaskId());
             logger.info("rejecting Facility demand done successfully!");
             return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
         } else {
-            logger.error("Error rejecting : null taskDto");
+            logger.error("Error rejecting : null inputBankFacilitiesDto");
             return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Rejecting : null TaskDto"));
         }
     }
 
     @RequestMapping(value = "/ws/activiti/approveBranchTask", method = RequestMethod.POST)
-    public ResponseDto approveBranchTask(@RequestBody TaskDto taskDto) {
-        if (taskDto.getApprove().equals("true"))
-            variables.put("grant", true);
+    public ResponseDto approveBranchTask(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
+        Map<String, Object> variables = new HashMap<>();
+        if (bankFacilitiesDto.getApprove().equals("true"))
+            taskService.setVariable(bankFacilitiesDto.getTaskId(), "grant", 1);
         else
-            variables.put("grant", false);
-        taskService.complete(taskDto.getTaskId(), variables);
+            taskService.setVariable(bankFacilitiesDto.getTaskId(), "grant", 0);
+        taskService.complete(bankFacilitiesDto.getTaskId(), variables);
         logger.info("Declaring Facility State Done Successfully!");
         return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
     }
 
     @RequestMapping(value = "/ws/activiti/payment", method = RequestMethod.POST)
     @Transactional(rollbackOn = Exception.class)
-    public ResponseDto payment(@RequestBody PaymentDto paymentDto) {
-        TransactionDto transactionDto = new TransactionDto(paymentDto.getAccountNumber(), paymentDto.getAmount());
+    public ResponseDto payment(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
+        TransactionDto transactionDto = new TransactionDto(bankFacilitiesDto.getAccountNumber(), bankFacilitiesDto.getAmount());
         transactionController.deposit(transactionDto);
-        Task task = taskService.createTaskQuery().taskId(paymentDto.getTaskId()).singleResult();
-        Map<String, Object> taskLocalVariables = runtimeService.getVariables(task.getProcessInstanceId());
-        BankFacilitiesDto bankFacilitiesDto = (BankFacilitiesDto) taskLocalVariables.get("bankFacility");
         FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "تائيد و واريز شده");
         accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
-        taskService.complete(paymentDto.getTaskId());
+        taskService.complete(bankFacilitiesDto.getTaskId());
         logger.info("Depositing Facility Demand Done Successfully!");
         return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
     }
@@ -343,26 +331,20 @@ public class CustomerController {
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/saveLegalPerson", method = RequestMethod.POST)
-    public ResponseDto<LegalPersonEntity> saveLegal(@RequestBody LegalPersonEntity legalPersonEntity) {
+    public ResponseDto<LegalPersonEntity> saveLegal(@RequestBody LegalPersonEntity legalPersonEntity) throws LegalPersonException, AccountException {
 
         logger.info("SaveLegalPerson Web Service Is Starting !");
+
+        CustomerValidationUtility.legalPersonValidation(legalPersonEntity);
+        CustomerValidationUtility.accountValidation(legalPersonEntity.getAccountEntities());
         try {
-            if (CustomerValidationUtility.legalPersonValidation(legalPersonEntity) && CustomerValidationUtility.accountValidation(legalPersonEntity.getAccountEntities())) {
-                try {
-                    personDao.save(legalPersonEntity);
-                } catch (Exception e) {
-                    logger.error("SaveLegalPerson Web Service Is Exiting With Errors : " + e);
-                    return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
-                }
-                logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
-                return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
-            }
-        } catch (Exception errorMassage) {
-            logger.error("SaveLegalPerson Web Service Is Exiting With Errors : " + errorMassage.getMessage());
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(errorMassage.getMessage()));
+            personDao.save(legalPersonEntity);
+        } catch (Exception e) {
+            logger.error("SaveLegalPerson Web Service Is Exiting With Errors : " + e);
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
         }
-        logger.error("AddContact Web Service Is Exiting With Errors: Unexpected Error Has Occurred");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Unexpected Error Has Occurred"));
+        logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
     }
 
 
@@ -395,6 +377,12 @@ public class CustomerController {
     public ResponseDto<LegalPersonEntity> deleteLegal(@RequestBody LegalPersonEntity legalPersonEntity) {
         logger.info("DeleteLegalPerson Web Service Is Starting !");
         try {
+            for (AccountEntity account : legalPersonEntity.getAccountEntities()) {
+                if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
+                    logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
+                    return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber()));
+                }
+            }
             personDao.delete(legalPersonEntity);
             logger.info("DeleteLegalPerson Web Service Is Successfully Ended");
             return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted", null);
@@ -409,6 +397,12 @@ public class CustomerController {
     public ResponseDto<RealPersonEntity> delete(@RequestBody RealPersonEntity realPersonEntity) {
         logger.info("DeleteRealPerson Web Service Is Starting");
         try {
+            for (AccountEntity account : realPersonEntity.getAccountEntities()) {
+                if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
+                    logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
+                    return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber()));
+                }
+            }
             personDao.delete(realPersonEntity);
             logger.info("DeleteRealPerson Web Service Is Successfully Ended !");
             return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted!", null);

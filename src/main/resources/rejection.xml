@@ -1,9 +1,22 @@
 <?xml version="1.0"?>
-<page title="رد درخواست تسهيلات">
-    <section title="رد درخواست تسهيلات">
+<page title="ابلاغ رد درخواست تسهیلات">
+    <init>
+        <webService address="ws/plan/getTaskByTaskId" value="obj">
+            <webServiceInput name="taskId" ref="urlParams.taskId"/>
+        </webService>
+    </init>
+    <section title="مشخصات مشتری">
+        <input label="شماره درخواست :" type="text" value="obj.taskId" disable="true"/>
+        <input label="مبلغ تهسيلات :" type="text" value="obj.amount" disable="true"/>
+        <input label="شماره حساب :" type="text" value="obj.accountNumber" disable="true"/>
+        <input label="نوع تسهيلات :" type="text" value="obj.facilityType" disable="true"/>
+        <input label="نتیجه بررسی :"  type="text" value="obj.approve" disable="true"/>
+
         <actions>
-            <button label="ابلاغ به مشتري">
-                <webService clearPageOnSuccess="true" address="ws/activiti/rejection"></webService>
+            <button label="ابلاغ به مشتری">
+                <webService address="ws/activiti/rejection" clearPageOnSuccess="true">
+                    <webServiceInputObject name="obj"/>
+                </webService>
             </button>
         </actions>
     </section>

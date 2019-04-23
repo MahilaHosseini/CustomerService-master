@@ -21,16 +21,16 @@ public class ExceptionController {
         String error;
         if (t instanceof HttpMessageNotReadableException)
             error = "JSON Parser Has Error Parsing Objects";
-        if (t instanceof RealPersonException)
-            error ="" + t.getMessage();
-        if (t instanceof LegalPersonException)
+        else if (t instanceof RealPersonException)
+            error = "RealPersonException" + t.getMessage();
+        else if (t instanceof LegalPersonException)
             error = t.getMessage();
-        if (t instanceof AccountException)
+        else if (t instanceof AccountException)
             error = t.getMessage();
-        if (t instanceof TransactionException)
+        else if (t instanceof TransactionException)
             error = t.getMessage();
         else
-            error = "Unexpected Error Has Occurred";
+            error = "Unexpected Error Has Occurred" + t.getMessage();
 
         ResponseDto responseObject = new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(error));
         return new ResponseEntity<>(responseObject, HttpStatus.OK);
