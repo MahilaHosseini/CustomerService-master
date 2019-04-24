@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import javax.transaction.TransactionalException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
@@ -128,8 +127,11 @@ public class CustomerController {
 
 
     @RequestMapping(value = "/ws/addRealContact", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException {
+    public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonDto realPersonDto) throws RealPersonException {
+   // public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException {
         logger.info("addContact web service is running!");
+        RealPersonEntity realPersonEntity = new RealPersonEntity();
+        realPersonEntity = MapperClass.mapper( realPersonEntity ,realPersonDto);
         CustomerValidationUtility.realPersonValidation(realPersonEntity);
         if (Objects.isNull(realPersonDao.findByNationalCode(realPersonEntity.getNationalCode()))) {
             personDao.save(realPersonEntity);
@@ -183,17 +185,17 @@ public class CustomerController {
 
     @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/addAccount", method = RequestMethod.POST)
-    public ResponseDto<PersonEntity> addAccount(@RequestBody AccountDto accountDto) {
+    public ResponseDto<PersonEntity> addAccount(@RequestBody UiAccountDto uiAccountDto) {
 
-        if (!Objects.isNull(realPersonDao.findByNationalCode(accountDto.getCode()))) {
-            RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(accountDto.getCode());
-            AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), accountDto.getAccountAmount());
+        if (!Objects.isNull(realPersonDao.findByNationalCode(uiAccountDto.getCode()))) {
+            RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(uiAccountDto.getCode());
+            AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), uiAccountDto.getAccountAmount());
             realPersonEntity.addAccountEntity(account);
             return new ResponseDto(ResponseStatus.Ok, null, " RealPerson Account Successfully Added", null);
 
-        } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(accountDto.getCode()))) {
-            LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(accountDto.getCode());
-            AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), accountDto.getAccountAmount());
+        } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(uiAccountDto.getCode()))) {
+            LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(uiAccountDto.getCode());
+            AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), uiAccountDto.getAccountAmount());
             legalPersonEntity.addAccountEntity(account);
             return new ResponseDto(ResponseStatus.Ok, null, " LegalPerson Account Successfully Added", null);
         } else {
@@ -269,7 +271,7 @@ public class CustomerController {
             BankFacilitiesDto bankFacilitiesDto = new BankFacilitiesDto(taskLocalVariables.get("bankFacilityType").toString(), new BigDecimal(taskLocalVariables.get("bankFacilityAccAmount").toString()), (String) taskLocalVariables.get("bankFacilityAccNum"));
             bankFacilitiesDto.setTaskId(taskId);
             if (!Objects.isNull(taskLocalVariables.get("grant")))
-                if (taskLocalVariables.get("grant").toString().equals(1))
+                if (taskLocalVariables.get("grant").toString().equals("1"))
                     bankFacilitiesDto.setApprove("approved");
                 else
                     bankFacilitiesDto.setApprove("rejected");
@@ -311,8 +313,8 @@ public class CustomerController {
     @RequestMapping(value = "/ws/activiti/payment", method = RequestMethod.POST)
     @Transactional(rollbackOn = Exception.class)
     public ResponseDto payment(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
-        TransactionDto transactionDto = new TransactionDto(bankFacilitiesDto.getAccountNumber(), bankFacilitiesDto.getAmount());
-        transactionController.deposit(transactionDto);
+        UiTransactionDto uiTransactionDto = new UiTransactionDto(bankFacilitiesDto.getAccountNumber(), bankFacilitiesDto.getAmount());
+        transactionController.deposit(uiTransactionDto);
         FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "تائيد و واريز شده");
         accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
         taskService.complete(bankFacilitiesDto.getTaskId());

@@ -8,6 +8,7 @@ import com.customerService.app.utility.AccountException;
 import com.customerService.app.utility.LegalPersonException;
 import com.customerService.app.utility.RealPersonException;
 import com.customerService.app.utility.TransactionException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,6 +30,9 @@ public class ExceptionController {
             error = t.getMessage();
         else if (t instanceof TransactionException)
             error = t.getMessage();
+        else if (t.getCause() instanceof InvalidFormatException)
+            error = "Invalid Input Format";
+
         else
             error = "Unexpected Error Has Occurred" + t.getMessage();
 

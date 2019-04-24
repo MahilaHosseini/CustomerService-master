@@ -2,7 +2,7 @@ package com.customerService.app.utility;
 
 
 import com.customerService.app.dto.BankFacilitiesDto;
-import com.customerService.app.dto.TransactionDto;
+import com.customerService.app.dto.UiTransactionDto;
 import com.customerService.app.model.dao.AccountDao;
 
 
@@ -14,28 +14,28 @@ public class TransactionValidationUtility {
     private static String errorMassage;
 
 
-    public static boolean validateTransfer(TransactionDto transactionDto, AccountDao accountDao) throws TransactionException {
+    public static boolean validateTransfer(UiTransactionDto uiTransactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
-        if (Objects.isNull(transactionDto)) {
+        if (Objects.isNull(uiTransactionDto)) {
             errorMassage += "Transaction Doesn't Exist-";
             state = false;
         } else {
-            if (Objects.isNull(transactionDto.getAccountNumber())) {
+            if (Objects.isNull(uiTransactionDto.getAccountNumber())) {
                 errorMassage += "SourceAccountNumber Field Is Null-";
                 state = false;
-            } else if (Objects.isNull(accountDao.findByAccountNumber(transactionDto.getAccountNumber()))) {
+            } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()))) {
                 errorMassage += "Account With Such SourceAccountNumber Doesn't Exist-";
                 state = false;
             }
-            amountValidation(transactionDto.getAmount());
-            if (Objects.isNull(transactionDto.getDestinationAccountNumber())) {
+            amountValidation(uiTransactionDto.getAmount());
+            if (Objects.isNull(uiTransactionDto.getDestinationAccountNumber())) {
                 errorMassage += "DestinationAccountNumber Field Is Null-";
                 state = false;
-            } else if (Objects.isNull(accountDao.findByAccountNumber(transactionDto.getDestinationAccountNumber()))) {
+            } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getDestinationAccountNumber()))) {
                 errorMassage += "Account With Such DestinationAccountNumber Doesn't Exist-";
                 state = false;
-            } else if (accountDao.findByAccountNumber(transactionDto.getAccountNumber()).getAccountAmount().compareTo( transactionDto.getAmount())==-1) {
+            } else if (accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()).getAccountAmount().compareTo( uiTransactionDto.getAmount())==-1) {
                 errorMassage += "SourceAccount Balance Is Not Enough-";
                 state = false;
             }
@@ -47,18 +47,18 @@ public class TransactionValidationUtility {
         }
     }
 
-    public static boolean validateDeposit(TransactionDto transactionDto, AccountDao accountDao) throws TransactionException {
+    public static boolean validateDeposit(UiTransactionDto uiTransactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
-        if (Objects.isNull(transactionDto)) {
+        if (Objects.isNull(uiTransactionDto)) {
             errorMassage += "Transaction Doesn't Exist-";
             state = false;
         } else {
-            amountValidation(transactionDto.getAmount());
-            if (Objects.isNull(transactionDto.getAccountNumber())) {
+            amountValidation(uiTransactionDto.getAmount());
+            if (Objects.isNull(uiTransactionDto.getAccountNumber())) {
                 errorMassage += "DestinationAccountNumber Field Is Null-";
                 state = false;
-            } else if (Objects.isNull(accountDao.findByAccountNumber(transactionDto.getAccountNumber()))) {
+            } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()))) {
                 errorMassage += "Account With Such AccountNumber Doesn't Exist-";
                 state = false;
             }
@@ -93,21 +93,21 @@ public class TransactionValidationUtility {
     }
 
 
-    public static boolean validateRemoval(TransactionDto transactionDto, AccountDao accountDao) throws TransactionException {
+    public static boolean validateRemoval(UiTransactionDto uiTransactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
-        if (Objects.isNull(transactionDto)) {
+        if (Objects.isNull(uiTransactionDto)) {
             errorMassage += "Transaction Doesn't Exist-";
             state = false;
         } else {
-            amountValidation(transactionDto.getAmount());
-            if (Objects.isNull(transactionDto.getAccountNumber())) {
+            amountValidation(uiTransactionDto.getAmount());
+            if (Objects.isNull(uiTransactionDto.getAccountNumber())) {
                 errorMassage += "SourceAccountNumber Field Is Null-";
                 state = false;
-            } else if (Objects.isNull(accountDao.findByAccountNumber(transactionDto.getAccountNumber()))) {
+            } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()))) {
                 errorMassage += "Account With Such AccountNumber Doesn't Exist-";
                 state = false;
-            } else if (accountDao.findByAccountNumber(transactionDto.getAccountNumber()).getAccountAmount().compareTo(transactionDto.getAmount())==-1) {
+            } else if (accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()).getAccountAmount().compareTo(uiTransactionDto.getAmount())==-1) {
                 errorMassage += "SourceAccount Balance Is Not Enough-";
                 state = false;
             }

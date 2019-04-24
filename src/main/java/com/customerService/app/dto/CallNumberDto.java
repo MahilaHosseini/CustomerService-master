@@ -1,19 +1,9 @@
-package com.customerService.app.model.entity;
+package com.customerService.app.dto;
 
-import com.customerService.app.dto.Type;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-@Entity
-public class CallNumberEntity {
-    @Id
-    @GeneratedValue
+public class CallNumberDto {
     private Integer id;
     private String number;
     private Type type;
-
 
     public Integer getId() {
         return id;
@@ -39,6 +29,5 @@ public class CallNumberEntity {
     public String getType() {
         return type.name();
     }
-
-
+    
 }

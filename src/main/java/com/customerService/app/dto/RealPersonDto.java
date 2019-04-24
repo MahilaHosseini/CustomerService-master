@@ -1,15 +1,18 @@
-package com.customerService.app.model.entity;
+package com.customerService.app.dto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import com.customerService.app.model.entity.CallNumberEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class RealPersonEntity extends PersonEntity {
+
+
+public class RealPersonDto extends PersonDto {
     private String lastName;
-    @Column(unique = true)
     private String nationalCode;
+
+    public RealPersonDto() {
+    }
+
 
     public String getName() {
         return super.getName();
@@ -43,11 +46,11 @@ public class RealPersonEntity extends PersonEntity {
         return lastName;
     }
 
-    public List<CallNumberEntity> getNumbers() {
+    public List<CallNumberDto> getNumbers() {
         return super.getNumbers();
     }
 
-    public void setNumbers(ArrayList<CallNumberEntity> numbers) {
+    public void setNumbers(ArrayList<CallNumberDto> numbers) {
         super.setNumbers(numbers);
     }
 

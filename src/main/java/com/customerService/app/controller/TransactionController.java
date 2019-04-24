@@ -2,7 +2,7 @@ package com.customerService.app.controller;
 
 import com.customerService.app.dto.*;
 import com.customerService.app.dto.ResponseStatus;
-import com.customerService.app.dto.TransactionDto;
+import com.customerService.app.dto.UiTransactionDto;
 import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.utility.BenefitCalculation;
@@ -34,17 +34,17 @@ public class TransactionController {
 
     @RequestMapping(value = "/ws/transfer", method = RequestMethod.POST)
     @Transactional(rollbackOn = Exception.class)
-    public ResponseDto<TransactionEntity> transfer(@RequestBody TransactionDto transactionDto) {
+    public ResponseDto<TransactionEntity> transfer(@RequestBody UiTransactionDto uiTransactionDto) {
         logger.info("Transfer Transaction Started!");
         try {
-            if (TransactionValidationUtility.validateTransfer(transactionDto, accountDao)) {
-                AccountEntity sourceAccountEntity = accountDao.findByAccountNumber(transactionDto.getAccountNumber());
-                sourceAccountEntity.setAccountAmount(sourceAccountEntity.getAccountAmount().subtract(transactionDto.getAmount()));
-                AccountEntity destinationAccountEntity = accountDao.findByAccountNumber(transactionDto.getDestinationAccountNumber());
-                destinationAccountEntity.setAccountAmount(destinationAccountEntity.getAccountAmount().add(transactionDto.getAmount()));
-                TransactionEntity sourceTransactionEntity = new TransactionEntity(transactionDto.getAmount(), TransactionType.Transfer, transactionDto.getDestinationAccountNumber());
+            if (TransactionValidationUtility.validateTransfer(uiTransactionDto, accountDao)) {
+                AccountEntity sourceAccountEntity = accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber());
+                sourceAccountEntity.setAccountAmount(sourceAccountEntity.getAccountAmount().subtract(uiTransactionDto.getAmount()));
+                AccountEntity destinationAccountEntity = accountDao.findByAccountNumber(uiTransactionDto.getDestinationAccountNumber());
+                destinationAccountEntity.setAccountAmount(destinationAccountEntity.getAccountAmount().add(uiTransactionDto.getAmount()));
+                TransactionEntity sourceTransactionEntity = new TransactionEntity(uiTransactionDto.getAmount(), TransactionType.Transfer, uiTransactionDto.getDestinationAccountNumber());
                 sourceAccountEntity.setTransactionEntities(sourceAccountEntity.addTransaction(sourceTransactionEntity));
-                TransactionEntity destinationTransactionEntity = new TransactionEntity(transactionDto.getAmount(), TransactionType.Deposit, null);
+                TransactionEntity destinationTransactionEntity = new TransactionEntity(uiTransactionDto.getAmount(), TransactionType.Deposit, null);
                 destinationAccountEntity.setTransactionEntities(destinationAccountEntity.addTransaction(destinationTransactionEntity));
                 if (sourceAccountEntity.getAccountAmount().compareTo(sourceAccountEntity.getMinimumOfTheDay()) == -1)
                     sourceAccountEntity.setMinimumOfTheDay(sourceAccountEntity.getAccountAmount());
@@ -65,14 +65,14 @@ public class TransactionController {
 
     @RequestMapping(value = "/ws/deposit", method = RequestMethod.POST)
     @Transactional(rollbackOn = Exception.class)
-    public ResponseDto deposit(@RequestBody TransactionDto transactionDto) {
+    public ResponseDto deposit(@RequestBody UiTransactionDto uiTransactionDto) {
         logger.info("Transfer Transaction Started!");
 
         try {
-            if (TransactionValidationUtility.validateDeposit(transactionDto, accountDao)) {
-                AccountEntity destinationAccountEntity = accountDao.findByAccountNumber(transactionDto.getAccountNumber());
-                destinationAccountEntity.setAccountAmount(destinationAccountEntity.getAccountAmount().add(transactionDto.getAmount()));
-                TransactionEntity destinationTransactionEntity = new TransactionEntity(transactionDto.getAmount(), TransactionType.Deposit, null);
+            if (TransactionValidationUtility.validateDeposit(uiTransactionDto, accountDao)) {
+                AccountEntity destinationAccountEntity = accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber());
+                destinationAccountEntity.setAccountAmount(destinationAccountEntity.getAccountAmount().add(uiTransactionDto.getAmount()));
+                TransactionEntity destinationTransactionEntity = new TransactionEntity(uiTransactionDto.getAmount(), TransactionType.Deposit, null);
                 destinationAccountEntity.setTransactionEntities(destinationAccountEntity.addTransaction(destinationTransactionEntity));
                 logger.info("Deposit Transaction Ended Successfully!");
                 return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
@@ -102,13 +102,13 @@ public class TransactionController {
 
     @RequestMapping(value = "/ws/removal", method = RequestMethod.POST)
     @Transactional(rollbackOn = Exception.class)
-    public ResponseDto<TransactionEntity> removal(@RequestBody TransactionDto transactionDto) {
+    public ResponseDto<TransactionEntity> removal(@RequestBody UiTransactionDto uiTransactionDto) {
         logger.info("Removal Transaction Started!");
         try {
-            if (TransactionValidationUtility.validateRemoval(transactionDto, accountDao)) {
-                AccountEntity sourceAccountEntity = accountDao.findByAccountNumber(transactionDto.getAccountNumber());
-                sourceAccountEntity.setAccountAmount(sourceAccountEntity.getAccountAmount().subtract(transactionDto.getAmount()));
-                TransactionEntity transactionEntity = new TransactionEntity(transactionDto.getAmount(), TransactionType.Removal, null);
+            if (TransactionValidationUtility.validateRemoval(uiTransactionDto, accountDao)) {
+                AccountEntity sourceAccountEntity = accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber());
+                sourceAccountEntity.setAccountAmount(sourceAccountEntity.getAccountAmount().subtract(uiTransactionDto.getAmount()));
+                TransactionEntity transactionEntity = new TransactionEntity(uiTransactionDto.getAmount(), TransactionType.Removal, null);
                 sourceAccountEntity.setTransactionEntities(sourceAccountEntity.addTransaction(transactionEntity));
                 if (sourceAccountEntity.getAccountAmount().compareTo(sourceAccountEntity.getMinimumOfTheDay()) == -1)
                     sourceAccountEntity.setMinimumOfTheDay(sourceAccountEntity.getAccountAmount());
