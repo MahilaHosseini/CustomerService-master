@@ -131,7 +131,7 @@ public class CustomerController {
    // public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException {
         logger.info("addContact web service is running!");
         RealPersonEntity realPersonEntity = new RealPersonEntity();
-        realPersonEntity = MapperClass.mapper( realPersonEntity ,realPersonDto);
+        realPersonEntity = CustomMapper.objectMapper( realPersonEntity ,realPersonDto);
         CustomerValidationUtility.realPersonValidation(realPersonEntity);
         if (Objects.isNull(realPersonDao.findByNationalCode(realPersonEntity.getNationalCode()))) {
             personDao.save(realPersonEntity);
