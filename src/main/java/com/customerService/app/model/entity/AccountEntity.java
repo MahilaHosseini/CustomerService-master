@@ -1,5 +1,10 @@
 package com.customerService.app.model.entity;
 
+import com.customerService.app.controller.MapTo;
+import com.customerService.app.dto.AccountDto;
+import com.customerService.app.dto.FacilityDto;
+import com.customerService.app.dto.TransactionDto;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,8 +23,10 @@ public class AccountEntity {
     private String accountNumber;
     private BigDecimal accountAmount;
     private Date openingDate = new Date();
+    @MapTo(targetEntity = TransactionDto.class)
     @OneToMany(cascade = CascadeType.ALL)
     private List<TransactionEntity> transactionEntities = new ArrayList<>();
+    @MapTo(targetEntity = FacilityDto.class)
     @OneToMany(cascade = CascadeType.ALL)
     private List<FacilityEntity> facilityEntities = new ArrayList<>();
     private BigDecimal profit = new BigDecimal(0);

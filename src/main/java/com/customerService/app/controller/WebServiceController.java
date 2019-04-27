@@ -1,13 +1,13 @@
 package com.customerService.app.controller;
 
 import com.customerService.app.DemoApplication;
+import com.customerService.app.dto.*;
+import com.customerService.app.dto.ResponseStatus;
 import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.dao.LegalPersonDao;
 import com.customerService.app.model.dao.PersonDao;
 import com.customerService.app.model.dao.RealPersonDao;
 import com.customerService.app.model.entity.*;
-import com.customerService.app.dto.*;
-import com.customerService.app.dto.ResponseStatus;
 import com.customerService.app.utility.*;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -31,23 +31,19 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
-public class CustomerController {
+public class WebServiceController {
     private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
-    private PersonDao personDao;
-    private RealPersonDao realPersonDao;
-    private LegalPersonDao legalPersonDao;
     private AccountDao accountDao;
     private TransactionController transactionController;
+    private FacadeLayer facade;
 
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
     private TaskService taskService;
 
-    public CustomerController(PersonDao personDao, RealPersonDao realPersonDao, LegalPersonDao legalPersonDao, TransactionController transactionController, AccountDao accountDao) {
-        this.personDao = personDao;
-        this.realPersonDao = realPersonDao;
-        this.legalPersonDao = legalPersonDao;
+    public WebServiceController(FacadeLayer facade, TransactionController transactionController, AccountDao accountDao) {
+        this.facade = facade;
         this.transactionController = transactionController;
         this.accountDao = accountDao;
     }
@@ -127,87 +123,105 @@ public class CustomerController {
 
 
     @RequestMapping(value = "/ws/addRealContact", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonDto realPersonDto) throws RealPersonException {
-   // public ResponseDto<RealPersonEntity> addContact(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException {
+    public ResponseDto<RealPersonDto> addContact(@RequestBody RealPersonDto realPersonDto) throws RealPersonException {
         logger.info("addContact web service is running!");
-        RealPersonEntity realPersonEntity = new RealPersonEntity();
-        realPersonEntity = CustomMapper.objectMapper( realPersonEntity ,realPersonDto);
-        CustomerValidationUtility.realPersonValidation(realPersonEntity);
-        if (Objects.isNull(realPersonDao.findByNationalCode(realPersonEntity.getNationalCode()))) {
-            personDao.save(realPersonEntity);
-            logger.info("AddContact Web Service Successfully Ended !");
-            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
-        } else {
-            logger.error("AddContact Web Service Is Exiting With  *Duplicate NationalCode*  Error");
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Duplicate NationalCode"));
-        }
+        facade.addContact(realPersonDto);
+        logger.info("addContact web service Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully added", null);
     }
 
     @RequestMapping(value = "/ws/addLegalContact", method = RequestMethod.POST)
-    public ResponseDto<LegalPersonEntity> addLegalContact(@RequestBody LegalPersonEntity legalPersonEntity) throws LegalPersonException {
+    public ResponseDto<LegalPersonDto> addLegalContact(@RequestBody LegalPersonDto legalPersonDto) throws LegalPersonException {
         logger.info("addLegalContact web service Successfully ended !");
-        CustomerValidationUtility.legalPersonValidation(legalPersonEntity);
-        if (Objects.isNull(legalPersonDao.findByRegistrationCode(legalPersonEntity.getRegistrationCode()))) {
-            personDao.save(legalPersonEntity);
-            logger.info("addLegalContact web service Successfully ended !");
-            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
-        } else {
-            logger.error("addLegalContact web service is exiting with  *Duplicate Registration code*  error!");
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Duplicate Registration Code"));
-
-        }
+        facade.addLegalContact(legalPersonDto);
+        logger.info("addLegalContact web service Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
     }
 
-    @Transactional(rollbackOn = Exception.class)
     @RequestMapping(value = "/ws/saveRealPerson", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> save(@RequestBody RealPersonEntity realPersonEntity) throws RealPersonException, AccountException {
+    public ResponseDto<RealPersonDto> save(@RequestBody RealPersonDto realPersonDto) throws RealPersonException, AccountException {
 
         logger.info("saveRealPerson web service is starting !");
-
-        CustomerValidationUtility.realPersonValidation(realPersonEntity);
-        CustomerValidationUtility.accountValidation(realPersonEntity.getAccountEntities());
-        try {
-            realPersonDao.save(realPersonEntity);
-        } catch (Exception e) {
-            logger.error("saveRealPerson web service is exiting with errors : " + e);
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
-        }
+        facade.save(realPersonDto);
         logger.info("saveRealPerson web service Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
+    }
+
+    @RequestMapping(value = "/ws/saveLegalPerson", method = RequestMethod.POST)
+    public ResponseDto<LegalPersonDto> saveLegal(@RequestBody LegalPersonDto legalPersonDto) throws
+            LegalPersonException, AccountException {
+        logger.info("SaveLegalPerson Web Service Is Starting !");
+        facade.saveLegal(legalPersonDto);
+        logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
+    }
+
+
+    @RequestMapping(value = "/ws/addAccount", method = RequestMethod.POST)
+    public ResponseDto<PersonEntity> addAccount(@RequestBody UiAccountDto uiAccountDto) throws AccountException {
+        logger.info("addAccount web service is starting !");
+        facade.addAccount(uiAccountDto);
+        logger.info("addAccount web service Successfully ended !");
         return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
 
 
     }
 
-    public Integer generateAccountNumber(Integer id) {
-        Random r = new Random();
-        return r.nextInt(500000000) + 1000000000 + id;
+
+    @RequestMapping(value = "/ws/deleteLegalPerson", method = RequestMethod.POST)
+    public ResponseDto<LegalPersonDto> deleteLegal(@RequestBody LegalPersonDto legalPersonDto) throws Exception {
+        logger.info("DeleteLegalPerson Web Service Is Starting !");
+        facade.deleteLegal(legalPersonDto);
+        logger.info("DeleteLegalPerson Web Service Is Successfully Ended");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted", null);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @RequestMapping(value = "/ws/addAccount", method = RequestMethod.POST)
-    public ResponseDto<PersonEntity> addAccount(@RequestBody UiAccountDto uiAccountDto) {
+    @RequestMapping(value = "/ws/deleteRealPerson", method = RequestMethod.POST)
+    public ResponseDto<RealPersonDto> delete(@RequestBody RealPersonDto realPersonDto) throws Exception {
+        logger.info("DeleteRealPerson Web Service Is Starting");
+        facade.delete(realPersonDto);
+        logger.info("DeleteRealPerson Web Service Is Successfully Ended !");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted!", null);
 
-        if (!Objects.isNull(realPersonDao.findByNationalCode(uiAccountDto.getCode()))) {
-            RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(uiAccountDto.getCode());
-            AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), uiAccountDto.getAccountAmount());
-            realPersonEntity.addAccountEntity(account);
-            return new ResponseDto(ResponseStatus.Ok, null, " RealPerson Account Successfully Added", null);
+    }
 
-        } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(uiAccountDto.getCode()))) {
-            LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(uiAccountDto.getCode());
-            AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), uiAccountDto.getAccountAmount());
-            legalPersonEntity.addAccountEntity(account);
-            return new ResponseDto(ResponseStatus.Ok, null, " LegalPerson Account Successfully Added", null);
-        } else {
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("No Such Customer!"));
-        }
+    @RequestMapping(value = "/ws/uniqueRealSearch", method = RequestMethod.POST)
+    public ResponseDto<RealPersonDto> uniqueRealSearch(@RequestParam String nationalCode) throws Exception {
+        logger.info("UniqueRealSearch Web Service Is Starting !");
+        RealPersonDto realPersonDto = facade.uniqueRealSearch(nationalCode);
+        logger.info("UniqueRealSearch Web Service Is Successfully Ended !");
+        return new ResponseDto(ResponseStatus.Ok, realPersonDto, null, null);
 
+    }
 
+    @RequestMapping(value = "/ws/uniqueLegalSearch", method = RequestMethod.POST)
+    public ResponseDto<LegalPersonDto> uniqueLegalSearch(@RequestParam String registrationCode) throws Exception {
+        logger.info("UniqueLegalSearch Web Service Is Starting !");
+        LegalPersonDto legalPersonDto = facade.uniqueLegalSearch(registrationCode);
+        logger.info("UniqueLegalSearch Web Service Is Successfully Ended !");
+        return new ResponseDto(ResponseStatus.Ok, legalPersonDto, null, null);
+    }
+
+    @RequestMapping(value = "/ws/realPersonSearch", method = RequestMethod.POST)
+    public ResponseDto<List<RealPersonDto>> realSearch(@RequestBody SearchDto searchDto) throws Exception {
+        logger.info("realPersonSearch web service is starting !");
+        List<RealPersonDto> realPersonDtos = facade.realSearch(searchDto);
+        logger.info("realPersonSearch web service is Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, realPersonDtos, null, null);
+    }
+
+    @RequestMapping(value = "/ws/legalPersonSearch", method = RequestMethod.POST)
+    public ResponseDto<List<LegalPersonDto>> legalSearch(@RequestBody SearchDto searchDto) throws Exception {
+        logger.info("realPersonSearch web service is starting !");
+        List<LegalPersonDto> legalPersonDtos = facade.legalSearch(searchDto);
+        logger.info("realPersonSearch web service is Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, legalPersonDtos, null, null);
     }
 
     @RequestMapping(value = "/ws/activiti/startProcess", method = RequestMethod.POST)
     public ResponseDto startProcess(@RequestBody BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
-        if (TransactionValidationUtility.validateFacility(bankFacilitiesDto, accountDao)) {
+        if (TransactionValidationUtility.validateFacilityDto(bankFacilitiesDto, accountDao)) {
             Map<String, Object> variables = new HashMap<>();
             variables.put("bankFacilityAccNum", bankFacilitiesDto.getAccountNumber());
             variables.put("bankFacilityAccAmount", bankFacilitiesDto.getAmount());
@@ -283,21 +297,6 @@ public class CustomerController {
         }
     }
 
-    @Transactional(rollbackOn = Exception.class)
-    @RequestMapping(value = "/ws/activiti/rejection", method = RequestMethod.POST)
-    public ResponseDto rejection(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
-        if (!Objects.isNull(bankFacilitiesDto)) {
-            FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "رد شده");
-            accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
-            taskService.complete(bankFacilitiesDto.getTaskId());
-            logger.info("rejecting Facility demand done successfully!");
-            return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
-        } else {
-            logger.error("Error rejecting : null inputBankFacilitiesDto");
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Rejecting : null TaskDto"));
-        }
-    }
-
     @RequestMapping(value = "/ws/activiti/approveBranchTask", method = RequestMethod.POST)
     public ResponseDto approveBranchTask(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
         Map<String, Object> variables = new HashMap<>();
@@ -310,14 +309,16 @@ public class CustomerController {
         return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
     }
 
+    @RequestMapping(value = "/ws/activiti/rejection", method = RequestMethod.POST)
+    public ResponseDto rejection(@RequestBody BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
+        facade.rejection(bankFacilitiesDto);
+        return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
+
+    }
+
     @RequestMapping(value = "/ws/activiti/payment", method = RequestMethod.POST)
-    @Transactional(rollbackOn = Exception.class)
-    public ResponseDto payment(@RequestBody BankFacilitiesDto bankFacilitiesDto) {
-        UiTransactionDto uiTransactionDto = new UiTransactionDto(bankFacilitiesDto.getAccountNumber(), bankFacilitiesDto.getAmount());
-        transactionController.deposit(uiTransactionDto);
-        FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "تائيد و واريز شده");
-        accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
-        taskService.complete(bankFacilitiesDto.getTaskId());
+    public ResponseDto payment(@RequestBody BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
+        facade.payment(bankFacilitiesDto);
         logger.info("Depositing Facility Demand Done Successfully!");
         return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
     }
@@ -330,113 +331,5 @@ public class CustomerController {
             return principal.toString();
         }
     }
-
-    @Transactional(rollbackOn = Exception.class)
-    @RequestMapping(value = "/ws/saveLegalPerson", method = RequestMethod.POST)
-    public ResponseDto<LegalPersonEntity> saveLegal(@RequestBody LegalPersonEntity legalPersonEntity) throws LegalPersonException, AccountException {
-
-        logger.info("SaveLegalPerson Web Service Is Starting !");
-
-        CustomerValidationUtility.legalPersonValidation(legalPersonEntity);
-        CustomerValidationUtility.accountValidation(legalPersonEntity.getAccountEntities());
-        try {
-            personDao.save(legalPersonEntity);
-        } catch (Exception e) {
-            logger.error("SaveLegalPerson Web Service Is Exiting With Errors : " + e);
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Version Conflict!"));
-        }
-        logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
-    }
-
-
-    @RequestMapping(value = "/ws/uniqueRealSearch", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> uniqueRealSearch(@RequestParam String nationalCode) {
-        logger.info("UniqueRealSearch Web Service Is Starting !");
-        RealPersonEntity realPersonEntity = realPersonDao.findByNationalCode(nationalCode);
-        if (!Objects.isNull(realPersonEntity)) {
-            logger.info("UniqueRealSearch Web Service Is Successfully Ended !");
-            return new ResponseDto(ResponseStatus.Ok, realPersonEntity, null, null);
-        }
-        logger.error("UniqueRealSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("NO Such Customer"));
-    }
-
-    @RequestMapping(value = "/ws/uniqueLegalSearch", method = RequestMethod.POST)
-    public ResponseDto<LegalPersonEntity> uniqueLegalSearch(@RequestParam String registrationCode) {
-        logger.info("UniqueLegalSearch Web Service Is Starting !");
-        LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(registrationCode);
-        if (!Objects.isNull(legalPersonEntity)) {
-            logger.info("UniqueLegalSearch Web Service Is Successfully Ended !");
-            return new ResponseDto(ResponseStatus.Ok, legalPersonEntity, null, null);
-        }
-        logger.error("UniqueLegalSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("NO Such Customer"));
-    }
-
-    @Transactional(rollbackOn = Exception.class)
-    @RequestMapping(value = "/ws/deleteLegalPerson", method = RequestMethod.POST)
-    public ResponseDto<LegalPersonEntity> deleteLegal(@RequestBody LegalPersonEntity legalPersonEntity) {
-        logger.info("DeleteLegalPerson Web Service Is Starting !");
-        try {
-            for (AccountEntity account : legalPersonEntity.getAccountEntities()) {
-                if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
-                    logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
-                    return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber()));
-                }
-            }
-            personDao.delete(legalPersonEntity);
-            logger.info("DeleteLegalPerson Web Service Is Successfully Ended");
-            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted", null);
-        } catch (Exception e) {
-            logger.error("DeleteLegalPerson Web Service Is Exiting With Errors : " + e);
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error"));
-        }
-    }
-
-    @Transactional(rollbackOn = Exception.class)
-    @RequestMapping(value = "/ws/deleteRealPerson", method = RequestMethod.POST)
-    public ResponseDto<RealPersonEntity> delete(@RequestBody RealPersonEntity realPersonEntity) {
-        logger.info("DeleteRealPerson Web Service Is Starting");
-        try {
-            for (AccountEntity account : realPersonEntity.getAccountEntities()) {
-                if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
-                    logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
-                    return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber()));
-                }
-            }
-            personDao.delete(realPersonEntity);
-            logger.info("DeleteRealPerson Web Service Is Successfully Ended !");
-            return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted!", null);
-        } catch (Exception e) {
-            logger.error("DeleteRealPerson Web Service Is Exiting With Errors : " + e);
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error "));
-        }
-    }
-
-    @RequestMapping(value = "/ws/realPersonSearch", method = RequestMethod.POST)
-    public ResponseDto<List<RealPersonEntity>> realSearch(@RequestBody SearchDto searchDto) {
-        logger.info("realPersonSearch web service is starting !");
-        List<RealPersonEntity> realPersonEntities = realPersonDao.findByName(searchDto.getName());
-        if (!Objects.isNull(realPersonEntities)) {
-            logger.info("realPersonSearch web service is Successfully ended !");
-            return new ResponseDto(ResponseStatus.Ok, realPersonEntities, null, null);
-        }
-        logger.error("realPersonSearch web service is exiting with  *NO Such Customer*  error !");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("NO Such Customer"));
-    }
-
-    @RequestMapping(value = "/ws/legalPersonSearch", method = RequestMethod.POST)
-    public ResponseDto<List<LegalPersonEntity>> legalSearch(@RequestBody SearchDto searchDto) {
-        logger.info("legalPersonSearch web service is starting !");
-        List<LegalPersonEntity> legalPersonEntities = legalPersonDao.findByName(searchDto.getName());
-        if (!Objects.isNull(legalPersonEntities)) {
-            logger.info("legalPersonSearch web service is Successfully ended !");
-            return new ResponseDto(ResponseStatus.Ok, legalPersonEntities, null, null);
-        }
-        logger.error("legalPersonSearch web service is exiting with  *NO Such Customer*  error !");
-        return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("NO Such Customer"));
-    }
-
 
 }

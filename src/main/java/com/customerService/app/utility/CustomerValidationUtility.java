@@ -71,7 +71,7 @@ public class CustomerValidationUtility {
         }
     }
 
-    public static boolean realPersonValidation(RealPersonEntity realPersonEntity) throws RealPersonException{
+    public static boolean realPersonValidation(RealPersonEntity realPersonEntity) throws RealPersonException {
         validationState = true;
         if (Objects.isNull(realPersonEntity)) {
             errorMessage = "object is null-";
@@ -172,17 +172,40 @@ public class CustomerValidationUtility {
         }
         return validationState;
     }
-    public static boolean accountValidation(List<AccountEntity> accountEntities)  throws AccountException {
+
+    public static boolean accountValidation(List<AccountEntity> accountEntities) throws AccountException {
         if (!Objects.isNull(accountEntities)) {
             for (AccountEntity accountEntity : accountEntities) {
-                if (accountEntity.getAccountAmount().compareTo(new BigDecimal(10000))==-1) {
+                if (accountEntity.getAccountAmount().compareTo(new BigDecimal(10000)) == -1) {
                     errorMessage += ("Balance is Not Valid-");
                     logger.error("Balance is Not Valid");
                     validationState = false;
-                }else {
-                    accountEntities.forEach(sd -> sd.setMinimumOfTheDay(sd.getAccountAmount()));
+                } else {
+                    accountEntities.forEach(sd -> {
+                        sd.setMinimumOfTheDay(sd.getAccountAmount());
+                        sd.setMinimumOfMonth(sd.getAccountAmount());
+                    });
                 }
             }
+        }
+        if (validationState)
+            return true;
+        else {
+            throw new AccountException(errorMessage);
+        }
+    }
+
+    public static boolean accountGenerationValidation(AccountEntity accountEntity) throws AccountException {
+        if (!Objects.isNull(accountEntity)) {
+            if (accountEntity.getAccountAmount().compareTo(new BigDecimal(10000)) == -1) {
+                errorMessage += ("Balance is Not Valid-");
+                logger.error("Balance is Not Valid");
+                validationState = false;
+            } else {
+                accountEntity.setMinimumOfTheDay(accountEntity.getAccountAmount());
+                accountEntity.setMinimumOfMonth(accountEntity.getAccountAmount());
+            }
+
         }
         if (validationState)
             return true;

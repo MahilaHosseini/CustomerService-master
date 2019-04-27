@@ -4,6 +4,7 @@ package com.customerService.app.utility;
 import com.customerService.app.dto.BankFacilitiesDto;
 import com.customerService.app.dto.UiTransactionDto;
 import com.customerService.app.model.dao.AccountDao;
+import com.customerService.app.model.entity.FacilityEntity;
 
 
 import java.math.BigDecimal;
@@ -70,7 +71,7 @@ public class TransactionValidationUtility {
             throw new TransactionException(errorMassage);
         }
     }
-    public static boolean validateFacility(BankFacilitiesDto bankFacilitiesDto, AccountDao accountDao) throws TransactionException {
+    public static boolean validateFacilityDto(BankFacilitiesDto bankFacilitiesDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
         if (Objects.isNull(bankFacilitiesDto)) {
@@ -91,7 +92,6 @@ public class TransactionValidationUtility {
             throw new TransactionException(errorMassage);
         }
     }
-
 
     public static boolean validateRemoval(UiTransactionDto uiTransactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";

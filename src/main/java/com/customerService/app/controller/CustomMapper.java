@@ -55,11 +55,12 @@ public class CustomMapper {
                 try {
                     MapTo mapTo = srcField.getAnnotation(MapTo.class);
                     Class targetClass = mapTo.targetEntity();
-                    Object targetObj = targetClass.newInstance();
+
                     getterResult = (ArrayList) srcFieldToGetterMap.get(srcField).invoke(source);
 
-                    for (Object item : getterResult)
-                        setterList.add(CustomMapper.objectMapper(targetObj, item));
+                    for (Object item : getterResult){
+                        Object targetObj = targetClass.newInstance();
+                        setterList.add(CustomMapper.objectMapper(targetObj, item));}
 
                     for (Method destinationMethod : toMethods) {
                         if (destinationMethod.getName().startsWith("set") && Objects.equals(destinationMethod.getName(), "set" + srcFieldToGetterMap.get(srcField).getName().substring(3))) {

@@ -1,5 +1,9 @@
 package com.customerService.app.model.entity;
 
+import com.customerService.app.controller.MapTo;
+import com.customerService.app.dto.AccountDto;
+import com.customerService.app.dto.CallNumberDto;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,8 +18,10 @@ public abstract class PersonEntity {
     private String name;
     private String eMailAddress;
     private String address;
+    @MapTo(targetEntity = CallNumberDto.class)
     @OneToMany(cascade = CascadeType.ALL)
     private List<CallNumberEntity> numbers;
+    @MapTo(targetEntity = AccountDto.class)
     @OneToMany(cascade = CascadeType.ALL)
     private List<AccountEntity> accountEntities;
 

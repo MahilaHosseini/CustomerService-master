@@ -1,5 +1,7 @@
 package com.customerService.app.dto;
 
+import com.customerService.app.controller.MapTo;
+
 public class CallNumberDto {
     private Integer id;
     private String number;
@@ -22,8 +24,8 @@ public class CallNumberDto {
         return number;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setType(String type) {
+        this.type = Type.valueOf(type);
     }
 
     public String getType() {
