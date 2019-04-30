@@ -51,12 +51,12 @@ public class CustomMapper {
             //lists of our classes
             else if (srcField.getType().toString().contains("List") && !Objects.isNull(srcField.getDeclaredAnnotation(MapTo.class))) {
                 List setterList = new ArrayList();
-                List getterResult;
+                Collection getterResult;
                 try {
                     MapTo mapTo = srcField.getAnnotation(MapTo.class);
                     Class targetClass = mapTo.targetEntity();
 
-                    getterResult = (ArrayList) srcFieldToGetterMap.get(srcField).invoke(source);
+                    getterResult = (Collection) srcFieldToGetterMap.get(srcField).invoke(source);
 
                     for (Object item : getterResult){
                         Object targetObj = targetClass.newInstance();

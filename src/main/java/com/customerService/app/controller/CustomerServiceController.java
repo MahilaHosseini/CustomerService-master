@@ -25,18 +25,18 @@ public class CustomerServiceController {
     private RealPersonDao realPersonDao;
     private LegalPersonDao legalPersonDao;
     private AccountDao accountDao;
-    private TransactionController transactionController;
+    private TransactionServiceController transactionServiceController;
 
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
     private TaskService taskService;
 
-    public CustomerServiceController(PersonDao personDao, RealPersonDao realPersonDao, LegalPersonDao legalPersonDao, TransactionController transactionController, AccountDao accountDao) {
+    public CustomerServiceController(PersonDao personDao, RealPersonDao realPersonDao, LegalPersonDao legalPersonDao, TransactionServiceController transactionServiceController, AccountDao accountDao) {
         this.personDao = personDao;
         this.realPersonDao = realPersonDao;
         this.legalPersonDao = legalPersonDao;
-        this.transactionController = transactionController;
+        this.transactionServiceController = transactionServiceController;
         this.accountDao = accountDao;
     }
 
@@ -69,7 +69,7 @@ public class CustomerServiceController {
     public void save(RealPersonEntity realPersonEntity) throws RealPersonException, AccountException {
         logger.info("saveRealPerson service is starting !");
         CustomerValidationUtility.realPersonValidation(realPersonEntity);
-        CustomerValidationUtility.accountValidation(realPersonEntity.getAccountEntities());
+        CustomerValidationUtility.accountValidation(realPersonEntity.getAccounts());
         realPersonDao.save(realPersonEntity);
         logger.info("saveRealPerson web service Successfully ended !");
     }
@@ -79,7 +79,7 @@ public class CustomerServiceController {
 
         logger.info("SaveLegalPerson Web Service Is Starting !");
         CustomerValidationUtility.legalPersonValidation(legalPersonEntity);
-        CustomerValidationUtility.accountValidation(legalPersonEntity.getAccountEntities());
+        CustomerValidationUtility.accountValidation(legalPersonEntity.getAccounts());
         personDao.save(legalPersonEntity);
         logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
     }
@@ -97,6 +97,7 @@ public class CustomerServiceController {
             AccountEntity account = new AccountEntity(generateAccountNumber(realPersonEntity.getID()).toString(), uiAccountDto.getAccountAmount());
             CustomerValidationUtility.accountGenerationValidation(account);
             realPersonEntity.addAccountEntity(account);
+            System.out.println("hi");
         } else if (!Objects.isNull(legalPersonDao.findByRegistrationCode(uiAccountDto.getCode()))) {
             LegalPersonEntity legalPersonEntity = legalPersonDao.findByRegistrationCode(uiAccountDto.getCode());
             AccountEntity account = new AccountEntity(generateAccountNumber(legalPersonEntity.getID()).toString(), uiAccountDto.getAccountAmount());
@@ -111,7 +112,7 @@ public class CustomerServiceController {
     @Transactional(rollbackOn = Exception.class)
     public void deleteLegal(LegalPersonEntity legalPersonEntity) throws Exception {
         logger.info("DeleteLegalPerson Web Service Is Starting !");
-        for (AccountEntity account : legalPersonEntity.getAccountEntities()) {
+        for (AccountEntity account : legalPersonEntity.getAccounts()) {
             if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
                 logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
                 throw new Exception("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
@@ -125,7 +126,7 @@ public class CustomerServiceController {
     @Transactional(rollbackOn = Exception.class)
     public void delete(RealPersonEntity realPersonEntity) throws Exception {
         logger.info("DeleteRealPerson Service Is Starting");
-        for (AccountEntity account : realPersonEntity.getAccountEntities()) {
+        for (AccountEntity account : realPersonEntity.getAccounts()) {
             if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
                 logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
                 throw new Exception("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
@@ -190,7 +191,7 @@ public class CustomerServiceController {
         if (!Objects.isNull(bankFacilitiesDto)) {
             TransactionValidationUtility.validateFacilityDto(bankFacilitiesDto, accountDao);
             FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "رد شده");
-            accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
+          //  accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
             taskService.complete(bankFacilitiesDto.getTaskId());
             logger.info("rejecting Facility demand done successfully!");
         } else {
@@ -206,9 +207,9 @@ public class CustomerServiceController {
             TransactionValidationUtility.validateFacilityDto(bankFacilitiesDto, accountDao);
             UiTransactionDto uiTransactionDto = new UiTransactionDto(bankFacilitiesDto.getAccountNumber(), bankFacilitiesDto.getAmount());
             TransactionValidationUtility.validateDeposit(uiTransactionDto, accountDao);
-            transactionController.deposit(uiTransactionDto);
+            transactionServiceController.deposit(uiTransactionDto);
             FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "تائيد و واريز شده");
-            accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
+           // accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
             taskService.complete(bankFacilitiesDto.getTaskId());
             logger.info("Depositing Facility Demand Done Successfully!");
         } else {

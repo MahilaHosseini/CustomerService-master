@@ -26,8 +26,8 @@
         <input label="تلفن :" type="text" value="number" disable="true"/>
         <input label="نوع :" type="text" value="type" disable="true"/>
     </table>
-    <table label="سپرده" value="obj.accountEntities" >
-        <table label="تراکنش" value="transactionEntities" >
+    <table label="سپرده" value="obj.accounts" >
+        <table label="تراکنش" value="transactions" >
             <input label="نوع تراکنش :" type="text" value="transactionType" disable="true"/>
             <input label="مبلغ :" type="text" value="amount" disable="true"/>
             <input label="حساب مقصد :" type="text" value="destinationAccountNumber" disable="true"/>

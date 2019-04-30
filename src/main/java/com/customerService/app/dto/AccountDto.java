@@ -1,5 +1,6 @@
 package com.customerService.app.dto;
 
+import com.customerService.app.controller.MapTo;
 import com.customerService.app.model.entity.FacilityEntity;
 import com.customerService.app.model.entity.TransactionEntity;
 import java.math.BigDecimal;
@@ -15,8 +16,10 @@ public class AccountDto {
     private String accountNumber;
     private BigDecimal accountAmount;
     private Date openingDate = new Date();
-    private List<TransactionDto> transactionDtos = new ArrayList<>();
-    private List<FacilityDto> facilityDtos = new ArrayList<>();
+    @MapTo(targetEntity = TransactionEntity.class)
+    private List<TransactionDto> transactions;
+    @MapTo(targetEntity = FacilityEntity.class)
+    private List<FacilityDto> facilities ;
     private BigDecimal profit = new BigDecimal(0);
     private BigDecimal minimumOfTheDay ;
     private BigDecimal minimumOfMonth ;
@@ -33,12 +36,12 @@ public class AccountDto {
 
     }
 
-    public List<FacilityDto> getFacilityDtos() {
-        return facilityDtos;
+    public List<FacilityDto> getFacilities() {
+        return facilities;
     }
 
-    public void setFacilityDtos(List<FacilityDto> facilityDtos) {
-        this.facilityDtos = facilityDtos;
+    public void setFacilities(List<FacilityDto> facilities) {
+        this.facilities = facilities;
     }
 
     public Integer getId() {
@@ -73,19 +76,19 @@ public class AccountDto {
         this.accountAmount = accountAmount;
     }
 
-    public List<TransactionDto> getTransactionDtos() {
-        return transactionDtos;
+    public List<TransactionDto> getTransactions() {
+        return transactions;
     }
     public List<TransactionDto> addTransaction(TransactionDto transactionDto) {
-        transactionDtos.add(transactionDto);
-        return transactionDtos;
+        transactions.add(transactionDto);
+        return transactions;
     }
     public List<FacilityDto> addFacility(FacilityDto facilityDto) {
-        facilityDtos.add(facilityDto);
-        return facilityDtos;
+        facilities.add(facilityDto);
+        return facilities;
     }
-    public void setTransactionDtos(List<TransactionDto> transactionDtos) {
-        this.transactionDtos = transactionDtos;
+    public void setTransactions(List<TransactionDto> transactions) {
+        this.transactions = transactions;
     }
 
     public Date getOpeningDate() {

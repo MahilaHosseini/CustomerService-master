@@ -14,16 +14,16 @@ public abstract class PersonEntity {
     @GeneratedValue
     private Integer id;
     @Version
-    private Integer version ;
+    private Integer version;
     private String name;
     private String eMailAddress;
     private String address;
+    @OneToMany(cascade = CascadeType.ALL)
     @MapTo(targetEntity = CallNumberDto.class)
-    @OneToMany(cascade = CascadeType.ALL)
     private List<CallNumberEntity> numbers;
-    @MapTo(targetEntity = AccountDto.class)
     @OneToMany(cascade = CascadeType.ALL)
-    private List<AccountEntity> accountEntities;
+    @MapTo(targetEntity = AccountDto.class)
+    private List<AccountEntity> accounts;
 
     public Integer getId() {
         return id;
@@ -33,9 +33,13 @@ public abstract class PersonEntity {
         this.id = id;
     }
 
-    public Integer getVersion() { return version; }
+    public Integer getVersion() {
+        return version;
+    }
 
-    public void setVersion(Integer version) { this.version = version; }
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     public String getName() {
         return name;
@@ -69,16 +73,16 @@ public abstract class PersonEntity {
         this.numbers = numbers;
     }
 
-    public List<AccountEntity> getAccountEntities() {
-        return accountEntities;
+    public List<AccountEntity> getAccounts() {
+        return accounts;
     }
 
-    public void setAccountEntities(List<AccountEntity> accountEntities) {
-        this.accountEntities = accountEntities;
+    public void setAccounts(List<AccountEntity> accounts) {
+        this.accounts = accounts;
     }
 
     public void addAccountEntity(AccountEntity accountEntity) {
-        this.accountEntities.add( accountEntity);
+        this.accounts.add(accountEntity);
     }
 }
 

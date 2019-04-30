@@ -7,6 +7,11 @@ import com.customerService.app.utility.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -15,11 +20,11 @@ public class FacadeLayer {
 
     private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
     private CustomerServiceController customerServiceController;
-    private TransactionController transactionController;
+    private TransactionServiceController transactionServiceController;
 
-    public FacadeLayer(CustomerServiceController customerServiceController, TransactionController transactionController) {
+    public FacadeLayer(CustomerServiceController customerServiceController, TransactionServiceController transactionServiceController) {
         this.customerServiceController = customerServiceController;
-        this.transactionController = transactionController;
+        this.transactionServiceController = transactionServiceController;
     }
 
     public void addContact(RealPersonDto realPersonDto) throws RealPersonException {
@@ -111,6 +116,7 @@ public class FacadeLayer {
         return legalPersonDtos;
 
     }
+
     @Transactional(rollbackOn = Exception.class)
     public void rejection(BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
         customerServiceController.rejection(bankFacilitiesDto);
@@ -122,6 +128,34 @@ public class FacadeLayer {
         customerServiceController.payment(bankFacilitiesDto);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public void transfer(UiTransactionDto uiTransactionDto) throws TransactionException {
+        logger.info("Transfer Transaction Started!");
+        transactionServiceController.transfer(uiTransactionDto);
+        logger.info("Transfer Transaction Ended Successfully!");
+
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void deposit(UiTransactionDto uiTransactionDto) throws TransactionException {
+        logger.info("Transfer Transaction Started!");
+        transactionServiceController.deposit(uiTransactionDto);
+        logger.info("Deposit Transaction Ended Successfully!");
+
+    }
 
 
+    public AccountEntity search(String accountNumber) throws Exception {
+        logger.info("search web service is starting !");
+        AccountEntity accountEntity = transactionServiceController.search(accountNumber);
+        logger.info("search web service is Successfully ended !");
+        return accountEntity;
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public void removal(UiTransactionDto uiTransactionDto) throws TransactionException {
+        logger.info("Removal Transaction Started!");
+        transactionServiceController.removal(uiTransactionDto);
+        logger.info("Removal Transaction Ended Successfully!");
+    }
 }

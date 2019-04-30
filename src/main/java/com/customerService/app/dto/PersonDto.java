@@ -4,7 +4,6 @@ import com.customerService.app.controller.MapTo;
 import com.customerService.app.model.entity.AccountEntity;
 import com.customerService.app.model.entity.CallNumberEntity;
 
-import javax.persistence.*;
 import java.util.List;
 
 public abstract class PersonDto {
@@ -17,7 +16,7 @@ public abstract class PersonDto {
     @MapTo(targetEntity = CallNumberEntity.class )
     private List<CallNumberDto> numbers;
     @MapTo(targetEntity = AccountEntity.class )
-    private List<AccountDto> accountDtos;
+    private List<AccountDto> accounts;
 
     public Integer getId() {
         return id;
@@ -63,16 +62,16 @@ public abstract class PersonDto {
         this.numbers = numbers;
     }
 
-    public List<AccountDto> getAccountDtos() {
-        return accountDtos;
+    public List<AccountDto> getAccounts() {
+        return accounts;
     }
 
-    public void setAccountDtos(List<AccountDto> accountDtos) {
-        this.accountDtos = accountDtos;
+    public void setAccounts(List<AccountDto> accounts) {
+        this.accounts = accounts;
     }
 
     public void addAccountDto(AccountDto accountDto) {
-        this.accountDtos.add( accountDto);
+        this.accounts.add( accountDto);
     }
 }
 

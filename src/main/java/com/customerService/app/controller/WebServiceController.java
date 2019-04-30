@@ -4,9 +4,6 @@ import com.customerService.app.DemoApplication;
 import com.customerService.app.dto.*;
 import com.customerService.app.dto.ResponseStatus;
 import com.customerService.app.model.dao.AccountDao;
-import com.customerService.app.model.dao.LegalPersonDao;
-import com.customerService.app.model.dao.PersonDao;
-import com.customerService.app.model.dao.RealPersonDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.utility.*;
 import org.activiti.engine.RuntimeService;
@@ -34,7 +31,7 @@ import java.util.*;
 public class WebServiceController {
     private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
     private AccountDao accountDao;
-    private TransactionController transactionController;
+    private TransactionServiceController transactionServiceController;
     private FacadeLayer facade;
 
     @Autowired
@@ -42,9 +39,9 @@ public class WebServiceController {
     @Autowired
     private TaskService taskService;
 
-    public WebServiceController(FacadeLayer facade, TransactionController transactionController, AccountDao accountDao) {
+    public WebServiceController(FacadeLayer facade, TransactionServiceController transactionServiceController, AccountDao accountDao) {
         this.facade = facade;
-        this.transactionController = transactionController;
+        this.transactionServiceController = transactionServiceController;
         this.accountDao = accountDao;
     }
 
@@ -162,7 +159,7 @@ public class WebServiceController {
         logger.info("addAccount web service is starting !");
         facade.addAccount(uiAccountDto);
         logger.info("addAccount web service Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
 
 
     }
@@ -330,6 +327,45 @@ public class WebServiceController {
         } else {
             return principal.toString();
         }
+    }
+
+    @RequestMapping(value = "/ws/transfer", method = RequestMethod.POST)
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseDto<TransactionEntity> transfer(@RequestBody UiTransactionDto uiTransactionDto) throws TransactionException {
+        logger.info("Transfer Transaction web Service Started!");
+        facade.transfer(uiTransactionDto);
+        logger.info("Transfer Transaction web Service Ended Successfully!");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Transferred!", null);
+
+    }
+
+
+    @RequestMapping(value = "/ws/deposit", method = RequestMethod.POST)
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseDto deposit(@RequestBody UiTransactionDto uiTransactionDto) throws TransactionException {
+        logger.info("Transfer Transaction web Service Started!");
+        facade.deposit(uiTransactionDto);
+        logger.info("Deposit Transaction web Service Ended Successfully!");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
+    }
+
+    @RequestMapping(value = "/ws/search", method = RequestMethod.POST)
+    public ResponseDto<AccountEntity> search(@RequestParam String accountNumber) throws Exception {
+        logger.info("transaction search web service is starting !");
+        AccountEntity accountEntity = facade.search(accountNumber);
+        logger.info("transaction search web service has Successfully ended !");
+        return new ResponseDto(ResponseStatus.Ok, accountEntity, null, null);
+
+    }
+
+    @RequestMapping(value = "/ws/removal", method = RequestMethod.POST)
+    @Transactional(rollbackOn = Exception.class)
+    public ResponseDto<TransactionEntity> removal(@RequestBody UiTransactionDto uiTransactionDto) throws TransactionException {
+        logger.info("Removal Transaction Started!");
+        facade.removal(uiTransactionDto);
+        logger.info("Removal Transaction Ended Successfully!");
+        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Removed!", null);
+
     }
 
 }

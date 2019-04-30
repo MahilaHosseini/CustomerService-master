@@ -31,7 +31,7 @@
                 <comboItem itemLabel="سایر" itemValue="OTHER" />
             </comboBox>
         </table>
-        <table label="سپرده" value="obj.accountEntities">
+        <table label="سپرده" value="obj.accounts">
             <input label="شماره حساب :" type="text" value="accountNumber" />
             <input label="موجودی :" type="text" value="accountAmount" />
         </table>

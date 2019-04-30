@@ -4,8 +4,6 @@ import com.customerService.app.model.entity.AccountEntity;
 import com.customerService.app.model.entity.CallNumberEntity;
 import com.customerService.app.model.entity.PersonEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import java.util.Date;
 import java.util.List;
 
@@ -43,12 +41,12 @@ public class LegalPersonDto extends PersonEntity {
         return super.getNumbers();
     }
 
-    public List<AccountEntity> getAccountEntities() {
-        return super.getAccountEntities();
+    public List<AccountEntity> getAccounts() {
+        return super.getAccounts();
     }
 
-    public void setAccountEntities(List<AccountEntity> accountEntities) {
-        super.setAccountEntities(accountEntities);
+    public void setAccounts(List<AccountEntity> accounts) {
+        super.setAccounts(accounts);
     }
     public void addAccountEntity(AccountEntity accountEntity) {
         super.addAccountEntity(accountEntity);

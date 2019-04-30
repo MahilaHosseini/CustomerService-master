@@ -40,12 +40,12 @@ public class LegalPersonEntity extends PersonEntity {
         return super.getNumbers();
     }
 
-    public List<AccountEntity> getAccountEntities() {
-        return super.getAccountEntities();
+    public List<AccountEntity> getAccounts() {
+        return super.getAccounts();
     }
 
-    public void setAccountEntities(List<AccountEntity> accountEntities) {
-        super.setAccountEntities(accountEntities);
+    public void setAccounts(List<AccountEntity> accounts) {
+        super.setAccounts(accounts);
     }
     public void addAccountEntity(AccountEntity accountEntity) {
         super.addAccountEntity(accountEntity);

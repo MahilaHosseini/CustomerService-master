@@ -59,7 +59,7 @@ public class CustomerValidationUtility {
                 logger.error("error on legal person numbers field: " + e);
             }
             /*try {
-                validationState = accountValidation(legalPersonEntity.getAccountEntities());
+                validationState = accountValidation(legalPersonEntity.getAccounts());
             } catch (Exception e) {
                 logger.error("error on real person account field: " + e);
             }*/
@@ -116,7 +116,7 @@ public class CustomerValidationUtility {
                 logger.error("error on real person numbers field: " + e);
             }
             /*try {
-                validationState = accountValidation(realPersonEntity.getAccountEntities());
+                validationState = accountValidation(realPersonEntity.getAccounts());
             } catch (Exception e) {
                 logger.error("error on real person account field: " + e);
             }*/

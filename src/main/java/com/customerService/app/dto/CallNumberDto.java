@@ -1,7 +1,5 @@
 package com.customerService.app.dto;
 
-import com.customerService.app.controller.MapTo;
-
 public class CallNumberDto {
     private Integer id;
     private String number;

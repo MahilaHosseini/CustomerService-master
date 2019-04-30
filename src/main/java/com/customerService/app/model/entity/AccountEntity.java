@@ -1,13 +1,11 @@
 package com.customerService.app.model.entity;
 
 import com.customerService.app.controller.MapTo;
-import com.customerService.app.dto.AccountDto;
 import com.customerService.app.dto.FacilityDto;
 import com.customerService.app.dto.TransactionDto;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,12 +21,12 @@ public class AccountEntity {
     private String accountNumber;
     private BigDecimal accountAmount;
     private Date openingDate = new Date();
+    @OneToMany(cascade = CascadeType.ALL)
     @MapTo(targetEntity = TransactionDto.class)
+    private List<TransactionEntity> transactions;
     @OneToMany(cascade = CascadeType.ALL)
-    private List<TransactionEntity> transactionEntities = new ArrayList<>();
     @MapTo(targetEntity = FacilityDto.class)
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<FacilityEntity> facilityEntities = new ArrayList<>();
+    private List<FacilityEntity> facilities;
     private BigDecimal profit = new BigDecimal(0);
     private BigDecimal minimumOfTheDay ;
     private BigDecimal minimumOfMonth ;
@@ -45,12 +43,12 @@ public class AccountEntity {
 
     }
 
-    public List<FacilityEntity> getFacilityEntities() {
-        return facilityEntities;
+    public List<FacilityEntity> getFacilities() {
+        return facilities;
     }
 
-    public void setFacilityEntities(List<FacilityEntity> facilityEntities) {
-        this.facilityEntities = facilityEntities;
+    public void setFacilities(List<FacilityEntity> facilities) {
+        this.facilities = facilities;
     }
 
     public Integer getId() {
@@ -85,19 +83,19 @@ public class AccountEntity {
         this.accountAmount = accountAmount;
     }
 
-    public List<TransactionEntity> getTransactionEntities() {
-        return transactionEntities;
+    public List<TransactionEntity> getTransactions() {
+        return transactions;
     }
     public List<TransactionEntity> addTransaction(TransactionEntity transactionEntity) {
-        transactionEntities.add(transactionEntity);
-        return transactionEntities;
+        transactions.add(transactionEntity);
+        return transactions;
     }
     public List<FacilityEntity> addFacility(FacilityEntity facilityEntity) {
-        facilityEntities.add(facilityEntity);
-        return facilityEntities;
+        facilities.add(facilityEntity);
+        return facilities;
     }
-    public void setTransactionEntities(List<TransactionEntity> transactionEntities) {
-        this.transactionEntities = transactionEntities;
+    public void setTransactions(List<TransactionEntity> transactions) {
+        this.transactions = transactions;
     }
 
     public Date getOpeningDate() {
