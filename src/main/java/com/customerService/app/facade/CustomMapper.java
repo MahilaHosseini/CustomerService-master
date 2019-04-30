@@ -1,4 +1,4 @@
-package com.customerService.app.controller;
+package com.customerService.app.facade;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -29,9 +29,10 @@ public class CustomMapper {
         //generate a map of field name & corresponding getterMethod name
         for (Field field : srcFieldsNames)
             for (Method sourceMethod : srcGetterMethods)
-                if (field.getName().equalsIgnoreCase(sourceMethod.getName().substring(3)))
-                    srcFieldToGetterMap.put(field, sourceMethod);
+                if (field.getName().equalsIgnoreCase(sourceMethod.getName().substring(3))) {
 
+                    srcFieldToGetterMap.put(field, sourceMethod);
+                }
 
         for (Field srcField : srcFieldsNames) {
             //lists of java classes

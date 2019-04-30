@@ -23,7 +23,7 @@ public class ExceptionController {
         if (t instanceof HttpMessageNotReadableException)
             error = "JSON Parser Has Error Parsing Objects";
         else if (t instanceof RealPersonException)
-            error = "RealPersonException" + t.getMessage();
+            error = "RealPersonException : " + t.getMessage();
         else if (t instanceof LegalPersonException)
             error = t.getMessage();
         else if (t instanceof AccountException)
@@ -31,10 +31,11 @@ public class ExceptionController {
         else if (t instanceof TransactionException)
             error = t.getMessage();
         else if (t.getCause() instanceof InvalidFormatException)
-            error = "Invalid Input Format";
-
+            error = "Invalid Input Format ";
+        else if (t instanceof javax.persistence.OptimisticLockException)
+            error = "version conflict ";
         else
-            error = "Unexpected Error Has Occurred" + t.getMessage();
+            error = "Unexpected Error Has Occurred : " + t.getMessage();
 
         ResponseDto responseObject = new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(error));
         return new ResponseEntity<>(responseObject, HttpStatus.OK);

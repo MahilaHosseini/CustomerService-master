@@ -1,16 +1,14 @@
-package com.customerService.app.controller;
+package com.customerService.app.facade;
 
 import com.customerService.app.DemoApplication;
+import com.customerService.app.controller.CustomerServiceController;
+import com.customerService.app.controller.TransactionServiceController;
 import com.customerService.app.dto.*;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.utility.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.*;

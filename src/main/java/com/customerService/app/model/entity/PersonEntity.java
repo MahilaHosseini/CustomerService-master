@@ -1,6 +1,6 @@
 package com.customerService.app.model.entity;
 
-import com.customerService.app.controller.MapTo;
+import com.customerService.app.facade.MapTo;
 import com.customerService.app.dto.AccountDto;
 import com.customerService.app.dto.CallNumberDto;
 

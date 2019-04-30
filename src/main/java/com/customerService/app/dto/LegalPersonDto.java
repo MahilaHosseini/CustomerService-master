@@ -1,14 +1,10 @@
 package com.customerService.app.dto;
 
-import com.customerService.app.model.entity.AccountEntity;
-import com.customerService.app.model.entity.CallNumberEntity;
-import com.customerService.app.model.entity.PersonEntity;
-
 import java.util.Date;
 import java.util.List;
 
 
-public class LegalPersonDto extends PersonEntity {
+public class LegalPersonDto extends PersonDto {
     private String registrationCode;
     private Date openingDate;
 
@@ -36,22 +32,22 @@ public class LegalPersonDto extends PersonEntity {
         super.setName(name);
     }
 
-    public List<CallNumberEntity> getNumbers() {
+    public List<CallNumberDto> getNumbers() {
 
         return super.getNumbers();
     }
 
-    public List<AccountEntity> getAccounts() {
+    public List<AccountDto> getAccounts() {
         return super.getAccounts();
     }
 
-    public void setAccounts(List<AccountEntity> accounts) {
+    public void setAccounts(List<AccountDto> accounts) {
         super.setAccounts(accounts);
     }
-    public void addAccountEntity(AccountEntity accountEntity) {
-        super.addAccountEntity(accountEntity);
+    public void addAccountDto(AccountDto accountDto) {
+        super.addAccountDto(accountDto);
     }
-    public void setNumbers(List<CallNumberEntity> numbers) {
+    public void setNumbers(List<CallNumberDto> numbers) {
         super.setNumbers(numbers);
     }
 
