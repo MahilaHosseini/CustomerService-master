@@ -5,6 +5,9 @@ import com.customerService.app.dto.BankFacilitiesDto;
 import com.customerService.app.dto.UiTransactionDto;
 import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.entity.FacilityEntity;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 
 import java.math.BigDecimal;
@@ -13,31 +16,32 @@ import java.util.Objects;
 public class TransactionValidationUtility {
     private static boolean state;
     private static String errorMassage;
-
+    @Autowired
+    private static Environment environment;
 
     public static boolean validateTransfer(UiTransactionDto uiTransactionDto, AccountDao accountDao) throws TransactionException {
         errorMassage = "";
         state = true;
         if (Objects.isNull(uiTransactionDto)) {
-            errorMassage += "Transaction Doesn't Exist-";
+            errorMassage += environment.getProperty("customerService.error.transaction.nullTransaction");
             state = false;
         } else {
             if (Objects.isNull(uiTransactionDto.getAccountNumber())) {
-                errorMassage += "SourceAccountNumber Field Is Null-";
+                errorMassage += environment.getProperty("customerService.error.transaction.nullSourceField");
                 state = false;
             } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()))) {
-                errorMassage += "Account With Such SourceAccountNumber Doesn't Exist-";
+                errorMassage += environment.getProperty("customerService.error.transaction.noSourceAccount");
                 state = false;
             }
             amountValidation(uiTransactionDto.getAmount());
             if (Objects.isNull(uiTransactionDto.getDestinationAccountNumber())) {
-                errorMassage += "DestinationAccountNumber Field Is Null-";
+                errorMassage += environment.getProperty("customerService.error.transaction.nullDestinationField");
                 state = false;
             } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getDestinationAccountNumber()))) {
-                errorMassage += "Account With Such DestinationAccountNumber Doesn't Exist-";
+                errorMassage += environment.getProperty("customerService.error.transaction.noDestinationAccount");
                 state = false;
             } else if (accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()).getAccountAmount().compareTo( uiTransactionDto.getAmount())==-1) {
-                errorMassage += "SourceAccount Balance Is Not Enough-";
+                errorMassage += environment.getProperty("customerService.error.transaction.balanceNotEnough");
                 state = false;
             }
         }
@@ -52,15 +56,15 @@ public class TransactionValidationUtility {
         errorMassage = "";
         state = true;
         if (Objects.isNull(uiTransactionDto)) {
-            errorMassage += "Transaction Doesn't Exist-";
+            errorMassage += environment.getProperty("customerService.error.transaction.nullTransaction");
             state = false;
         } else {
             amountValidation(uiTransactionDto.getAmount());
             if (Objects.isNull(uiTransactionDto.getAccountNumber())) {
-                errorMassage += "DestinationAccountNumber Field Is Null-";
+                errorMassage += environment.getProperty("customerService.error.transaction.nullDestinationField");
                 state = false;
             } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()))) {
-                errorMassage += "Account With Such AccountNumber Doesn't Exist-";
+                errorMassage += environment.getProperty("customerService.error.transaction.noDestinationAccount");
                 state = false;
             }
         }
@@ -79,10 +83,10 @@ public class TransactionValidationUtility {
             state = false;
         } else {
             if (Objects.isNull(bankFacilitiesDto.getAccountNumber())) {
-                errorMassage += "AccountNumber Field Is Null-";
+                errorMassage += environment.getProperty("customerService.error.transaction.nullSourceField");
                 state = false;
             } else if (Objects.isNull(accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()))) {
-                errorMassage += "Account With Such AccountNumber Doesn't Exist-";
+                errorMassage += environment.getProperty("customerService.error.transaction.noSourceAccount");
                 state = false;
             }
         }
@@ -97,18 +101,18 @@ public class TransactionValidationUtility {
         errorMassage = "";
         state = true;
         if (Objects.isNull(uiTransactionDto)) {
-            errorMassage += "Transaction Doesn't Exist-";
+            errorMassage += environment.getProperty("customerService.error.transaction.nullTransaction");
             state = false;
         } else {
             amountValidation(uiTransactionDto.getAmount());
             if (Objects.isNull(uiTransactionDto.getAccountNumber())) {
-                errorMassage += "SourceAccountNumber Field Is Null-";
+                errorMassage += environment.getProperty("customerService.error.transaction.nullSourceField");
                 state = false;
             } else if (Objects.isNull(accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()))) {
-                errorMassage += "Account With Such AccountNumber Doesn't Exist-";
+                errorMassage += environment.getProperty("customerService.error.transaction.noSourceAccount");
                 state = false;
             } else if (accountDao.findByAccountNumber(uiTransactionDto.getAccountNumber()).getAccountAmount().compareTo(uiTransactionDto.getAmount())==-1) {
-                errorMassage += "SourceAccount Balance Is Not Enough-";
+                errorMassage += environment.getProperty("customerService.error.transaction.balanceNotEnough");
                 state = false;
             }
         }
@@ -121,10 +125,10 @@ public class TransactionValidationUtility {
 
     public static void amountValidation(BigDecimal amount){
         if (Objects.isNull(amount)) {
-            errorMassage += "Amount Field Is Null-";
+            errorMassage +=environment.getProperty("customerService.error.transaction.nullAmount");
             state = false;
         } else if (amount.compareTo(BigDecimal.ZERO)==-1) {
-            errorMassage += "Amount Field Is Negative-";
+            errorMassage += environment.getProperty("customerService.error.transaction.negativeAmount");
             state = false;
         }
     }

@@ -9,6 +9,8 @@ import com.customerService.app.utility.LegalPersonException;
 import com.customerService.app.utility.RealPersonException;
 import com.customerService.app.utility.TransactionException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,25 +19,28 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class ExceptionController {
+    @Autowired
+    private Environment environment;
+
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ResponseDto> generalHandler(Throwable t) {
         String error;
         if (t instanceof HttpMessageNotReadableException)
-            error = "JSON Parser Has Error Parsing Objects";
+            error = environment.getProperty("customerService.exception.json");
         else if (t instanceof RealPersonException)
-            error = "RealPersonException : " + t.getMessage();
+            error = environment.getProperty("customerService.exception.real") + t.getMessage();
         else if (t instanceof LegalPersonException)
-            error = t.getMessage();
+            error = environment.getProperty("customerService.exception.legal") + t.getMessage();
         else if (t instanceof AccountException)
-            error = t.getMessage();
+            error = environment.getProperty("customerService.exception.account") + t.getMessage();
         else if (t instanceof TransactionException)
-            error = t.getMessage();
+            error = environment.getProperty("customerService.exception.transaction") + t.getMessage();
         else if (t.getCause() instanceof InvalidFormatException)
-            error = "Invalid Input Format ";
+            error = environment.getProperty("customerService.exception.invalidInputFormat");
         else if (t instanceof javax.persistence.OptimisticLockException)
-            error = "version conflict ";
+            error = environment.getProperty("customerService.exception.versionConflict");
         else
-            error = "Unexpected Error Has Occurred : " + t.getMessage();
+            error = environment.getProperty("customerService.exception.general") + t.getMessage();
 
         ResponseDto responseObject = new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(error));
         return new ResponseEntity<>(responseObject, HttpStatus.OK);

@@ -13,7 +13,9 @@ import org.activiti.engine.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
@@ -28,9 +30,10 @@ public class CustomerServiceController {
     private TransactionServiceController transactionServiceController;
 
     @Autowired
-    private RuntimeService runtimeService;
+    private Environment environment;
     @Autowired
     private TaskService taskService;
+
 
     public CustomerServiceController(PersonDao personDao, RealPersonDao realPersonDao, LegalPersonDao legalPersonDao, TransactionServiceController transactionServiceController, AccountDao accountDao) {
         this.personDao = personDao;
@@ -49,7 +52,7 @@ public class CustomerServiceController {
             logger.info("AddContact Web Service Successfully Ended !");
         } else {
             logger.error("AddContact Web Service Is Exiting With  *Duplicate NationalCode*  Error");
-            throw new RealPersonException("*Duplicate NationalCode*");
+            throw new RealPersonException(environment.getProperty("customerService.error.person.realDuplication"));
         }
     }
 
@@ -61,7 +64,7 @@ public class CustomerServiceController {
             logger.info("addLegalContact web service Successfully ended !");
         } else {
             logger.error("addLegalContact web service is exiting with  *Duplicate RegistrationCode*  error!");
-            throw new LegalPersonException("*Duplicate RegistrationCode*");
+            throw new LegalPersonException(environment.getProperty("customerService.error.person.legalDuplication"));
         }
     }
 
@@ -76,7 +79,6 @@ public class CustomerServiceController {
 
     @Transactional(rollbackOn = Exception.class)
     public void saveLegal(LegalPersonEntity legalPersonEntity) throws LegalPersonException, AccountException {
-
         logger.info("SaveLegalPerson Web Service Is Starting !");
         CustomerValidationUtility.legalPersonValidation(legalPersonEntity);
         CustomerValidationUtility.accountValidation(legalPersonEntity.getAccounts());
@@ -107,15 +109,13 @@ public class CustomerServiceController {
     }
 
 
-
-
     @Transactional(rollbackOn = Exception.class)
     public void deleteLegal(LegalPersonEntity legalPersonEntity) throws Exception {
         logger.info("DeleteLegalPerson Web Service Is Starting !");
         for (AccountEntity account : legalPersonEntity.getAccounts()) {
             if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
                 logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
-                throw new Exception("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
+                throw new Exception(environment.getProperty("customerService.error.person.notEmptyAccount") + account.getAccountNumber());
             }
         }
         personDao.delete(legalPersonEntity);
@@ -129,7 +129,7 @@ public class CustomerServiceController {
         for (AccountEntity account : realPersonEntity.getAccounts()) {
             if (accountDao.findByAccountNumber(account.getAccountNumber()).getAccountAmount().compareTo(BigDecimal.ZERO) != 0) {
                 logger.error("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
-                throw new Exception("Can't Delete Customer Due To *Not Empty Bank Account* : Account Number " + account.getAccountNumber());
+                throw new Exception(environment.getProperty("customerService.error.person.notEmptyAccount") + account.getAccountNumber());
             }
         }
         personDao.delete(realPersonEntity);
@@ -146,7 +146,7 @@ public class CustomerServiceController {
 
         } else {
             logger.error("UniqueRealSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
-            throw new Exception("NO Such Customer");
+            throw new Exception(environment.getProperty("customerService.error.person.noCustomer"));
         }
     }
 
@@ -158,7 +158,7 @@ public class CustomerServiceController {
             return legalPersonEntity;
         } else {
             logger.error("UniqueRealSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
-            throw new Exception("NO Such Customer");
+            throw new Exception(environment.getProperty("customerService.error.person.noCustomer"));
         }
     }
 
@@ -170,7 +170,7 @@ public class CustomerServiceController {
             return realPersonEntities;
         } else {
             logger.error("realPersonSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
-            throw new Exception("NO Such Customer");
+            throw new Exception(environment.getProperty("customerService.error.person.noCustomer"));
         }
     }
 
@@ -182,21 +182,22 @@ public class CustomerServiceController {
             return legalPersonEntities;
         } else {
             logger.error("legalPersonSearch Web Service Is Exiting With  *NO Such Customer*  Error !");
-            throw new Exception("NO Such Customer");
+            throw new Exception(environment.getProperty("customerService.error.person.noCustomer"));
         }
 
     }
+
     @Transactional(rollbackOn = Exception.class)
     public void rejection(BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
         if (!Objects.isNull(bankFacilitiesDto)) {
             TransactionValidationUtility.validateFacilityDto(bankFacilitiesDto, accountDao);
             FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "رد شده");
-          //  accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
+            accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
             taskService.complete(bankFacilitiesDto.getTaskId());
             logger.info("rejecting Facility demand done successfully!");
         } else {
             logger.error("Error rejecting : null inputBankFacilitiesDto");
-            throw new TransactionException("null inputBankFacilitiesDto");
+            throw new TransactionException(environment.getProperty("customerService.error.transaction.nullFacility"));
         }
     }
 
@@ -209,12 +210,12 @@ public class CustomerServiceController {
             TransactionValidationUtility.validateDeposit(uiTransactionDto, accountDao);
             transactionServiceController.deposit(uiTransactionDto);
             FacilityEntity facilityEntity = new FacilityEntity(bankFacilitiesDto.getFacilityType(), bankFacilitiesDto.getAmount(), "تائيد و واريز شده");
-           // accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
+            accountDao.findByAccountNumber(bankFacilitiesDto.getAccountNumber()).addFacility(facilityEntity);
             taskService.complete(bankFacilitiesDto.getTaskId());
             logger.info("Depositing Facility Demand Done Successfully!");
         } else {
             logger.error("Error rejecting : null inputBankFacilitiesDto");
-            throw new TransactionException("null inputBankFacilitiesDto");
+            throw new TransactionException(environment.getProperty("customerService.error.transaction.nullFacility"));
         }
     }
 

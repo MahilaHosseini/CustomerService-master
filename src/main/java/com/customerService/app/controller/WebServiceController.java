@@ -13,6 +13,7 @@ import org.activiti.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,17 +33,18 @@ import java.util.*;
 public class WebServiceController {
     private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
     private AccountDao accountDao;
-    private TransactionServiceController transactionServiceController;
+
     private FacadeLayer facade;
 
     @Autowired
     private RuntimeService runtimeService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private Environment environment;
 
-    public WebServiceController(FacadeLayer facade, TransactionServiceController transactionServiceController, AccountDao accountDao) {
+    public WebServiceController(FacadeLayer facade, AccountDao accountDao) {
         this.facade = facade;
-        this.transactionServiceController = transactionServiceController;
         this.accountDao = accountDao;
     }
 
@@ -107,16 +109,16 @@ public class WebServiceController {
         switch (code) {
             case "loginFailure":
                 logger.error("Wrong UserName Or Password");
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Wrong UserName Or Password"));
+                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(environment.getProperty("customerService.error.System.userOrPass")));
             default:
                 logger.error("Login System Error");
-                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("System Error"));
+                return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(environment.getProperty("customerService.error.System")));
         }
     }
 
     @RequestMapping(value = "/ws/logout", method = RequestMethod.POST)
     public ResponseDto<String> logOut() {
-        return new ResponseDto(ResponseStatus.Ok, null, "Bye!", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
 
@@ -125,7 +127,7 @@ public class WebServiceController {
         logger.info("addContact web service is running!");
         facade.addContact(realPersonDto);
         logger.info("addContact web service Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully added", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/addLegalContact", method = RequestMethod.POST)
@@ -133,7 +135,7 @@ public class WebServiceController {
         logger.info("addLegalContact web service Successfully ended !");
         facade.addLegalContact(legalPersonDto);
         logger.info("addLegalContact web service Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/saveRealPerson", method = RequestMethod.POST)
@@ -142,7 +144,7 @@ public class WebServiceController {
         logger.info("saveRealPerson web service is starting !");
         facade.save(realPersonDto);
         logger.info("saveRealPerson web service Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/saveLegalPerson", method = RequestMethod.POST)
@@ -151,7 +153,7 @@ public class WebServiceController {
         logger.info("SaveLegalPerson Web Service Is Starting !");
         facade.saveLegal(legalPersonDto);
         logger.info("SaveLegalPerson Web Service Has Successfully Ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Edited", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
 
@@ -160,7 +162,7 @@ public class WebServiceController {
         logger.info("addAccount web service is starting !");
         facade.addAccount(uiAccountDto);
         logger.info("addAccount web service Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Added", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
 
 
     }
@@ -171,7 +173,7 @@ public class WebServiceController {
         logger.info("DeleteLegalPerson Web Service Is Starting !");
         facade.deleteLegal(legalPersonDto);
         logger.info("DeleteLegalPerson Web Service Is Successfully Ended");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -180,7 +182,7 @@ public class WebServiceController {
         logger.info("DeleteRealPerson Web Service Is Starting");
         facade.delete(realPersonDto);
         logger.info("DeleteRealPerson Web Service Is Successfully Ended !");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deleted!", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
 
     }
 
@@ -189,7 +191,7 @@ public class WebServiceController {
         logger.info("UniqueRealSearch Web Service Is Starting !");
         RealPersonDto realPersonDto = facade.uniqueRealSearch(nationalCode);
         logger.info("UniqueRealSearch Web Service Is Successfully Ended !");
-        return new ResponseDto(ResponseStatus.Ok, realPersonDto, null, null);
+        return new ResponseDto(ResponseStatus.Ok, realPersonDto, environment.getProperty("customerService.ok.System.success"), null);
 
     }
 
@@ -198,7 +200,7 @@ public class WebServiceController {
         logger.info("UniqueLegalSearch Web Service Is Starting !");
         LegalPersonDto legalPersonDto = facade.uniqueLegalSearch(registrationCode);
         logger.info("UniqueLegalSearch Web Service Is Successfully Ended !");
-        return new ResponseDto(ResponseStatus.Ok, legalPersonDto, null, null);
+        return new ResponseDto(ResponseStatus.Ok, legalPersonDto, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/realPersonSearch", method = RequestMethod.POST)
@@ -206,7 +208,7 @@ public class WebServiceController {
         logger.info("realPersonSearch web service is starting !");
         List<RealPersonDto> realPersonDtos = facade.realSearch(searchDto);
         logger.info("realPersonSearch web service is Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, realPersonDtos, null, null);
+        return new ResponseDto(ResponseStatus.Ok, realPersonDtos, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/legalPersonSearch", method = RequestMethod.POST)
@@ -214,7 +216,7 @@ public class WebServiceController {
         logger.info("realPersonSearch web service is starting !");
         List<LegalPersonDto> legalPersonDtos = facade.legalSearch(searchDto);
         logger.info("realPersonSearch web service is Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, legalPersonDtos, null, null);
+        return new ResponseDto(ResponseStatus.Ok, legalPersonDtos, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/activiti/startProcess", method = RequestMethod.POST)
@@ -227,10 +229,10 @@ public class WebServiceController {
             variables.put("bankFacilityId", bankFacilitiesDto.getTaskId());
             runtimeService.startProcessInstanceByKey("Facility", variables);
             logger.info("Activiti Process Started successfully !");
-            return new ResponseDto(ResponseStatus.Ok, null, "فرایند آغاز شد.", null);
+            return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.activiti.start"), null);
         } else {
             logger.error("Activiti Process exited with error  !");
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Srarting Activiti process!"));
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(environment.getProperty("customerService.error.activiti")));
         }
     }
 
@@ -250,10 +252,10 @@ public class WebServiceController {
                     break;
             }
             logger.info("url retrieved !");
-            return new ResponseDto(ResponseStatus.Ok, url, "successfully redirected", null);
+            return new ResponseDto(ResponseStatus.Ok, url, environment.getProperty("customerService.ok.System.redirect"), null);
         } else {
             logger.error("Error getting Url By FormKey : null formKey");
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error getting Url By FormKey : null formKey"));
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(environment.getProperty("customerService.error.activiti.nullFormKey")));
         }
     }
 
@@ -271,7 +273,7 @@ public class WebServiceController {
             taskDtos.add(taskDto);
         }
         logger.info("Tasks list is retrieved successfully !");
-        return new ResponseDto(ResponseStatus.Ok, taskDtos, null, null);
+        return new ResponseDto(ResponseStatus.Ok, taskDtos, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/plan/getTaskByTaskId", method = RequestMethod.POST)
@@ -288,10 +290,10 @@ public class WebServiceController {
                 else
                     bankFacilitiesDto.setApprove("rejected");
             logger.info("Task Is Retrieved !");
-            return new ResponseDto(ResponseStatus.Ok, bankFacilitiesDto, null, null);
+            return new ResponseDto(ResponseStatus.Ok, bankFacilitiesDto, environment.getProperty("customerService.ok.System.success"), null);
         } else {
             logger.error("Error Getting Task By TaskId : null TaskId");
-            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException("Error Getting Task By TaskId : null TaskId"));
+            return new ResponseDto(ResponseStatus.Error, null, null, new ResponseException(environment.getProperty("customerService.error.activiti.nullTaskId")));
         }
     }
 
@@ -304,13 +306,13 @@ public class WebServiceController {
             taskService.setVariable(bankFacilitiesDto.getTaskId(), "grant", 0);
         taskService.complete(bankFacilitiesDto.getTaskId(), variables);
         logger.info("Declaring Facility State Done Successfully!");
-        return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
     }
 
     @RequestMapping(value = "/ws/activiti/rejection", method = RequestMethod.POST)
     public ResponseDto rejection(@RequestBody BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
         facade.rejection(bankFacilitiesDto);
-        return new ResponseDto(ResponseStatus.Ok, null, "Sent", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.System.success"), null);
 
     }
 
@@ -318,7 +320,7 @@ public class WebServiceController {
     public ResponseDto payment(@RequestBody BankFacilitiesDto bankFacilitiesDto) throws TransactionException {
         facade.payment(bankFacilitiesDto);
         logger.info("Depositing Facility Demand Done Successfully!");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.transaction.deposit"), null);
     }
 
     private String getUsername() {
@@ -336,7 +338,7 @@ public class WebServiceController {
         logger.info("Transfer Transaction web Service Started!");
         facade.transfer(uiTransactionDto);
         logger.info("Transfer Transaction web Service Ended Successfully!");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Transferred!", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.transaction.transfer"), null);
 
     }
 
@@ -347,7 +349,7 @@ public class WebServiceController {
         logger.info("Transfer Transaction web Service Started!");
         facade.deposit(uiTransactionDto);
         logger.info("Deposit Transaction web Service Ended Successfully!");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Deposited!", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.transaction.deposit"), null);
     }
 
     @RequestMapping(value = "/ws/search", method = RequestMethod.POST)
@@ -355,7 +357,7 @@ public class WebServiceController {
         logger.info("transaction search web service is starting !");
         AccountEntity accountEntity = facade.search(accountNumber);
         logger.info("transaction search web service has Successfully ended !");
-        return new ResponseDto(ResponseStatus.Ok, accountEntity, null, null);
+        return new ResponseDto(ResponseStatus.Ok, accountEntity, environment.getProperty("customerService.ok.System.success"), null);
 
     }
 
@@ -365,7 +367,7 @@ public class WebServiceController {
         logger.info("Removal Transaction Started!");
         facade.removal(uiTransactionDto);
         logger.info("Removal Transaction Ended Successfully!");
-        return new ResponseDto(ResponseStatus.Ok, null, "Successfully Removed!", null);
+        return new ResponseDto(ResponseStatus.Ok, null, environment.getProperty("customerService.ok.transaction.removal"), null);
 
     }
 

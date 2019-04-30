@@ -1,0 +1,452 @@
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{ "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T115024.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{ "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114839.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" , "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114808.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" , "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114737.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" , "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114640.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" , "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114430.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T114418.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" , "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114338.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" ,  "nationalCode" : "2222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114154.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" ,  "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114139.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" ,  "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T114133.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" ,  "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" ,  "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T113541.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T113531.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "bbbb" ,  "nationalCode" : "2222222222", "numbers" : [{"number":"02166845879", "type":"HOME"},{"number":"09125847588", "type":"MOBILE"}]}
+
+<> 2019-04-30T113402.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T113344.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "aaa" ,  "nationalCode" : "111111", "numbers" : [{"number":"02154874587", "type":"HOME"}]}
+
+<> 2019-04-30T113215.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "aaa" ,  "nationalCode" : "1111111111", "numbers" : [{"number":"02154874587", "type":"HOME"}]}
+
+<> 2019-04-30T113159.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "aaa" ,  "nationalCode" : "1111111111", "numbers" : [{"number":"02154874587", "type":"HOME"}]}
+
+###
+
+POST http://localhost:8080/ws/addRealContact?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "aaa" ,  "nationalCode" : "1111111111", "numbers" : [{"number":"02154874587", "type":"HOME"}]}
+
+<> 2019-04-30T112632.200.json
+
+###
+
+POST http://localhost:8080/ws/addRealContact?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "aaa" ,  "nationalCode" : "111111", "numbers" : [{"number":"02154874587", "type":"HOME"}]}
+
+<> 2019-04-30T112607.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T112247.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ws/login?user=t&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/login?user=t&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=2222222222
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T033522.200.json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=2222222222
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T032050.200.json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=2222222222
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T032016.200.json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T032003.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T031922.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T023952.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=2222222222
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=2222222222
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T122652.200.json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T121458.200.json
+
+###
+
+GET http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T121357.200.json
+
+###
+
+GET http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T121328.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ws/login?user=Teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T121139.200.json
+
+###
+
+POST http://localhost:8080/ws/login?user=Teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+POST http://localhost:8080/ws/addRealContact
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"name" : "aaa" ,  "nationalCode" : "1111111111", "numbers" : [{"number":"02154874587", "type":"HOME"}]}
+
+###
+
+POST http://localhost:8080/ws/uniqueRealSearch?nationalCode=1111111111
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ws/login?user=Teller&pass=a
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+<> 2019-04-30T121026.200.json
+
+###
+

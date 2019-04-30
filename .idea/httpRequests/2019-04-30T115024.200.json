@@ -1,0 +1,8 @@
+{
+  "status": "Error",
+  "responseObject": null,
+  "notificationMessage": null,
+  "exception": {
+    "fullMessage": "RealPersonException :*Duplicate NationalCode*"
+  }
+}

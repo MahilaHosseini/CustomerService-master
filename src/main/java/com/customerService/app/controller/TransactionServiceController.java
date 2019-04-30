@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,8 @@ import java.util.Objects;
 public class TransactionServiceController {
     private static Logger logger = LoggerFactory.getLogger(TransactionServiceController.class);
     private AccountDao accountDao;
-
+    @Autowired
+    private Environment environment;
     @Autowired
     @Qualifier("minOfDay")
     private BenefitCalculation benefitCalculation;
@@ -70,7 +72,7 @@ public class TransactionServiceController {
             logger.info("search web service is Successfully ended !");
             return accountEntity;
         } else {
-            throw new Exception("No such Account");
+            throw new Exception(environment.getProperty("customerService.error.transaction.noAccount"));
         }
     }
 
@@ -88,7 +90,7 @@ public class TransactionServiceController {
             sourceAccountEntity.setMinimumOfMonth(sourceAccountEntity.getAccountAmount());
         logger.info("Removal Transaction Ended Successfully!");
 
-}
+    }
 /*
 
     @Scheduled(fixedRate = 30000 */
