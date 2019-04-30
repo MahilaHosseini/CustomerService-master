@@ -8,11 +8,11 @@ import com.customerService.app.model.dao.RealPersonDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.dto.*;
 import com.customerService.app.utility.*;
-import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Component
-public class CustomerServiceController {
+public class CustomerServiceController implements EnvironmentAware {
     private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
     private PersonDao personDao;
     private RealPersonDao realPersonDao;
@@ -29,8 +29,14 @@ public class CustomerServiceController {
     private AccountDao accountDao;
     private TransactionServiceController transactionServiceController;
 
-    @Autowired
+
     private Environment environment;
+
+    @Override
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
+    }
+
     @Autowired
     private TaskService taskService;
 

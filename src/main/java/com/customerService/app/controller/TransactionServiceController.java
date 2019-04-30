@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
@@ -20,11 +21,17 @@ import java.util.Objects;
 
 @Component
 @EnableScheduling
-public class TransactionServiceController {
+public class TransactionServiceController implements EnvironmentAware {
     private static Logger logger = LoggerFactory.getLogger(TransactionServiceController.class);
     private AccountDao accountDao;
-    @Autowired
+
     private Environment environment;
+
+    @Override
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
+    }
+
     @Autowired
     @Qualifier("minOfDay")
     private BenefitCalculation benefitCalculation;

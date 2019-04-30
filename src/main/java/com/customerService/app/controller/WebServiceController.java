@@ -13,6 +13,7 @@ import org.activiti.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +31,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
-public class WebServiceController {
+public class WebServiceController implements EnvironmentAware {
     private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
     private AccountDao accountDao;
 
@@ -40,8 +41,13 @@ public class WebServiceController {
     private RuntimeService runtimeService;
     @Autowired
     private TaskService taskService;
-    @Autowired
+
     private Environment environment;
+
+    @Override
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
+    }
 
     public WebServiceController(FacadeLayer facade, AccountDao accountDao) {
         this.facade = facade;

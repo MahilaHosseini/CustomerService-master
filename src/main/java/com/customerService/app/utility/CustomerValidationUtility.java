@@ -4,41 +4,47 @@ import com.customerService.app.model.entity.AccountEntity;
 import com.customerService.app.model.entity.CallNumberEntity;
 import com.customerService.app.model.entity.LegalPersonEntity;
 import com.customerService.app.model.entity.RealPersonEntity;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class CustomerValidationUtility {
+@Component
+public class CustomerValidationUtility implements EnvironmentAware {
 
     private static boolean validationState = true;
     private static Logger logger = LoggerFactory.getLogger(CustomerValidationUtility.class);
     private static String errorMessage;
 
-    @Autowired
+
     private static Environment environment;
+    @Override
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
+    }
+
 
     public static boolean legalPersonValidation(LegalPersonEntity legalPersonEntity) throws LegalPersonException {
         validationState = true;
         if (Objects.isNull(legalPersonEntity)) {
-            errorMessage = environment.getProperty("customerService.error.person.objNull");
+            errorMessage = environment.getProperty("customerService.error.person.nullobj");
             logger.error("object is null");
 
             validationState = false;
         } else {
             errorMessage = "";
             if (Objects.isNull(legalPersonEntity.getRegistrationCode())) {
-                errorMessage += environment.getProperty("customerService.error.person.registrationCodeNull");
+                errorMessage += environment.getProperty("customerService.error.person.nullRegistrationCode");
                 logger.error("RegistrationCode is null");
                 validationState = false;
             } else if (!Pattern.matches("[0-9]{10}", legalPersonEntity.getRegistrationCode())) {
-                errorMessage +=environment.getProperty("customerService.error.person.registrationCodeValid");
+                errorMessage += environment.getProperty("customerService.error.person.registrationCodeValid");
                 logger.error("RegistrationCode is not valid");
                 validationState = false;
             }
@@ -76,13 +82,13 @@ public class CustomerValidationUtility {
     public static boolean realPersonValidation(RealPersonEntity realPersonEntity) throws RealPersonException {
         validationState = true;
         if (Objects.isNull(realPersonEntity)) {
-            errorMessage = environment.getProperty("customerService.error.person.objNull");
+            errorMessage = environment.getProperty("customerService.error.person.nullobj");
             logger.error("object is null");
             validationState = false;
         } else {
             errorMessage = "";
             if (Objects.isNull(realPersonEntity.getNationalCode())) {
-                errorMessage += environment.getProperty("customerService.error.person.nationalCodeNull");
+                errorMessage += environment.getProperty("customerService.error.person.nullNationalCode");
                 logger.error("NationalCode is null");
                 validationState = false;
             } else if (!Pattern.matches("[0-9]{10}", realPersonEntity.getNationalCode())) {
@@ -147,9 +153,9 @@ public class CustomerValidationUtility {
 
     public static boolean nameValidation(String name) {
         if (Objects.isNull(name)) {
-            errorMessage += environment.getProperty("customerService.error.person.nameNull");
             logger.error("name is null");
             validationState = false;
+            errorMessage += environment.getProperty("customerService.error.person.Name");
         } else if (!Pattern.matches("[a-z,A-Z]{3,20}", name)) {
             errorMessage += environment.getProperty("customerService.error.person.nameValid");
             logger.error("Name is not valid");

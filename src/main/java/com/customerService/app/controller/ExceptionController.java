@@ -9,7 +9,7 @@ import com.customerService.app.utility.LegalPersonException;
 import com.customerService.app.utility.RealPersonException;
 import com.customerService.app.utility.TransactionException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionController {
-    @Autowired
+public class ExceptionController implements EnvironmentAware {
+
     private Environment environment;
+
+    @Override
+    public void setEnvironment(final Environment environment) {
+        this.environment = environment;
+    }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<ResponseDto> generalHandler(Throwable t) {
