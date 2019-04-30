@@ -23,7 +23,7 @@ public class CallNumberDto {
     }
 
     public void setType(String type) {
-        this.type = Type.valueOf(type);
+        this.type = Type.valueOf(type.toUpperCase());
     }
 
     public String getType() {

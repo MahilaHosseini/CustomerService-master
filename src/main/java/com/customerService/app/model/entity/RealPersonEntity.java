@@ -47,13 +47,23 @@ public class RealPersonEntity extends PersonEntity {
         return super.getNumbers();
     }
 
-    public void setNumbers(ArrayList<CallNumberEntity> numbers) {
+    public void setNumbers(List<CallNumberEntity> numbers) {
         super.setNumbers(numbers);
     }
 
     public String geteMailAddress() {
 
         return super.geteMailAddress();
+    }
+    public List<AccountEntity> getAccounts() {
+        return super.getAccounts();
+    }
+
+    public void setAccounts(List<AccountEntity> accounts) {
+        super.setAccounts(accounts);
+    }
+    public void addAccountEntity(AccountEntity accountEntity) {
+        super.addAccountEntity(accountEntity);
     }
 
     public void seteMailAddress(String eMailAddress) {

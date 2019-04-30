@@ -50,7 +50,7 @@ public class RealPersonDto extends PersonDto {
         return super.getNumbers();
     }
 
-    public void setNumbers(ArrayList<CallNumberDto> numbers) {
+    public void setNumbers(List<CallNumberDto> numbers) {
         super.setNumbers(numbers);
     }
 
@@ -58,7 +58,16 @@ public class RealPersonDto extends PersonDto {
 
         return super.geteMailAddress();
     }
+    public List<AccountDto> getAccounts() {
+        return super.getAccounts();
+    }
 
+    public void setAccounts(List<AccountDto> accounts) {
+        super.setAccounts(accounts);
+    }
+    public void addAccountDto(AccountDto accountDto) {
+        super.addAccountDto(accountDto);
+    }
     public void seteMailAddress(String eMailAddress) {
         super.seteMailAddress(eMailAddress);
     }
