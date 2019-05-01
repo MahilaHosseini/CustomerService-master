@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <page title=" ثبت مشتری حقوقی">
     <section title="مشخصات مشتری">
-        <input label="نام :" type="text" value="obj.name"/>
+        <input label="نام *:" type="text" value="obj.name"/>
         <input label="تاریخ ثبت شرکت :" type="date" value="obj.openingDate"/>
-        <input label="کد ثبت :" type="text" value="obj.registrationCode"/>
+        <input label="کد ثبت *:" type="text" value="obj.registrationCode"/>
         <input label="ایمیل :" type="text" value="obj.eMailAddress"/>
         <input label="آدرس :" type="text" value="obj.address"/>
         <table label="شماره تلفن" value="obj.numbers" type="editable">

@@ -4,6 +4,7 @@ package com.customerService.app.utility;
 import com.customerService.app.dto.BankFacilitiesDto;
 import com.customerService.app.dto.UiTransactionDto;
 import com.customerService.app.model.dao.AccountDao;
+import com.customerService.app.exception.TransactionException;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

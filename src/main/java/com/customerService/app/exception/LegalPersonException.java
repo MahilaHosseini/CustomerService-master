@@ -1,4 +1,4 @@
-package com.customerService.app.utility;
+package com.customerService.app.exception;
 
 public class LegalPersonException extends Exception {
     public LegalPersonException(String message) {

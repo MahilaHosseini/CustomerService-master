@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 
-public class DemoApplication {
-    private static Logger logger =   LoggerFactory.getLogger(DemoApplication.class);
+public class CustomerServiceApplication {
+    private static Logger logger =   LoggerFactory.getLogger(CustomerServiceApplication.class);
 
     public static void main(String[] args) {
         logger.info("main started!");
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(CustomerServiceApplication.class, args);
         logger.info("end main");
     }
 

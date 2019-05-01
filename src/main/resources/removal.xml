@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <page title="برداشت وجه">
     <section title="مشخصات تراکنش">
-        <input label="حساب مبدا :" type="text" value="obj.accountNumber"/>
-        <input label="مقدار :" type="text" value="obj.amount"/>
+        <input label="حساب مبدا *:" type="text" value="obj.accountNumber"/>
+        <input label="مقدار *:" type="text" value="obj.amount"/>
 
         <actions>
             <button label="انجام عملیات">

@@ -1,11 +1,14 @@
 package com.customerService.app.facade;
 
-import com.customerService.app.DemoApplication;
+import com.customerService.app.CustomerServiceApplication;
 import com.customerService.app.controller.CustomerServiceController;
 import com.customerService.app.controller.TransactionServiceController;
 import com.customerService.app.dto.*;
 import com.customerService.app.model.entity.*;
-import com.customerService.app.utility.*;
+import com.customerService.app.exception.AccountException;
+import com.customerService.app.exception.LegalPersonException;
+import com.customerService.app.exception.RealPersonException;
+import com.customerService.app.exception.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -16,7 +19,7 @@ import java.util.*;
 @Component
 public class FacadeLayer {
 
-    private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(CustomerServiceApplication.class);
     private CustomerServiceController customerServiceController;
     private TransactionServiceController transactionServiceController;
 

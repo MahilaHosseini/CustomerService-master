@@ -1,6 +1,6 @@
 package com.customerService.app.controller;
 
-import com.customerService.app.DemoApplication;
+import com.customerService.app.CustomerServiceApplication;
 import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.dao.LegalPersonDao;
 import com.customerService.app.model.dao.PersonDao;
@@ -8,6 +8,10 @@ import com.customerService.app.model.dao.RealPersonDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.dto.*;
 import com.customerService.app.utility.*;
+import com.customerService.app.exception.AccountException;
+import com.customerService.app.exception.LegalPersonException;
+import com.customerService.app.exception.RealPersonException;
+import com.customerService.app.exception.TransactionException;
 import org.activiti.engine.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +26,7 @@ import java.util.*;
 
 @Component
 public class CustomerServiceController implements EnvironmentAware {
-    private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(CustomerServiceApplication.class);
     private PersonDao personDao;
     private RealPersonDao realPersonDao;
     private LegalPersonDao legalPersonDao;

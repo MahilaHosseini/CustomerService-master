@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <page title="ثبت مشتری حقیقی">
     <section title="مشخصات مشتری">
-        <input label="نام :" type="text" value="obj.name"/>
+        <input label="نام *:" type="text" value="obj.name"/>
         <input label="نام خانوادگی :" type="text" value="obj.lastName"/>
-        <input label="کد ملی :" type="text" value="obj.nationalCode"/>
+        <input label="کد ملی *:" type="text" value="obj.nationalCode"/>
         <input label="ایمیل :" type="text" value="obj.eMailAddress"/>
         <input label="آدرس :" type="text" value="obj.address"/>
         <table label="شماره تلفن" value="obj.numbers" type="editable">

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <page title="ثبت درخواست تسهيلات">
     <section title="مشخصات مشتری">
-        <input label="شماره حساب :" type="text" value="obj.accountNumber"/>
-        <input label="مبلغ :" type="text" value="obj.amount"/>
-        <comboBox label="نوع تسهيلات:" value="obj.facilityType">
+        <input label="شماره حساب *:" type="text" value="obj.accountNumber"/>
+        <input label="مبلغ *:" type="text" value="obj.amount"/>
+        <comboBox label="نوع تسهيلات *:" value="obj.facilityType">
             <comboItem itemLabel="وام خرید خودرو" itemValue="CarLoan"/>
             <comboItem itemLabel="وام خرید زمین" itemValue="LandLoan"/>
             <comboItem itemLabel="وام مسکن" itemValue="HouseLoan"/>

@@ -1,12 +1,16 @@
 package com.customerService.app.controller;
 
-import com.customerService.app.DemoApplication;
+import com.customerService.app.CustomerServiceApplication;
 import com.customerService.app.dto.*;
 import com.customerService.app.dto.ResponseStatus;
 import com.customerService.app.facade.FacadeLayer;
 import com.customerService.app.model.dao.AccountDao;
 import com.customerService.app.model.entity.*;
 import com.customerService.app.utility.*;
+import com.customerService.app.exception.AccountException;
+import com.customerService.app.exception.LegalPersonException;
+import com.customerService.app.exception.RealPersonException;
+import com.customerService.app.exception.TransactionException;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
@@ -32,7 +36,7 @@ import java.util.*;
 
 @RestController
 public class WebServiceController implements EnvironmentAware {
-    private static Logger logger = LoggerFactory.getLogger(DemoApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(CustomerServiceApplication.class);
     private AccountDao accountDao;
 
     private FacadeLayer facade;

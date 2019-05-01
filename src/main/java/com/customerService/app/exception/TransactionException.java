@@ -1,4 +1,4 @@
-package com.customerService.app.utility;
+package com.customerService.app.exception;
 
 public class TransactionException extends Exception {
     public TransactionException(String message) {

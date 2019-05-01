@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <page title="انتقال وجه">
     <section title="مشخصات تراکنش">
-        <input label="حساب مبدا :" type="text" value="obj.accountNumber"/>
-        <input label="حساب مقصد :" type="text" value="obj.destinationAccountNumber"/>
-        <input label="مقدار :" type="text" value="obj.amount"/>
+        <input label="حساب مبدا *:" type="text" value="obj.accountNumber"/>
+        <input label="حساب مقصد *:" type="text" value="obj.destinationAccountNumber"/>
+        <input label="مقدار *:" type="text" value="obj.amount"/>
 
         <actions>
             <button label="انجام عملیات">
